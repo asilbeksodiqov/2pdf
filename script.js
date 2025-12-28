@@ -957,8 +957,6 @@ async function handleFeedbackSubmit(e) {
 <b>Reyting:</b> ${rating}/5
 <b>Xabar:</b>
 ${message}
-<b>Vaqt:</b> ${new Date().toLocaleString()}
-<b>Rasmlar soni:</b> ${imageManager.getCount()}
         `.trim();
 
         // Check if online
@@ -1029,3 +1027,4 @@ if ('setAppBadge' in navigator) {
     // Initial badge update
     updateBadge();
 }
+
