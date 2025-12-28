@@ -10,8 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- index.html faylining <head> qismiga quyidagilarni qo'shing -->
-
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
 
@@ -41,6 +39,9 @@
                 <i class="fas fa-file-pdf"></i>
                 <span>IMG2PDF</span>
             </div>
+            <button class="share-app-btn" id="shareAppBtn" style="display: none;">
+                <i class="fas fa-share-alt"></i>
+            </button>
         </div>
     </header>
 
@@ -56,7 +57,7 @@
                         <span class="gradient-text">PDF</span>ga
                     </h1>
                     <p class="hero-subtitle">
-                        Bir marta bosish. PDF tayyor.
+                        Bir nechta rasmlarni bitta PDFga aylantiring
                     </p>
                 </div>
 
@@ -69,47 +70,57 @@
                         <h3>Rasm yuklash</h3>
                         <p>Bu yerga tortib tashlang yoki tanlang</p>
                         
-                        <input type="file" id="fileInput" accept="image/*" hidden>
+                        <input type="file" id="fileInput" accept="image/*" multiple hidden>
                         <button class="btn-upload" id="selectFileBtn">
                             <i class="fas fa-folder-open"></i> Fayl tanlash
                         </button>
                         
                         <p class="upload-note">JPG, PNG, GIF, WebP (10MB gacha)</p>
+                        <p class="upload-note">Bir nechta rasm tanlash mumkin (max: 10 ta)</p>
                     </div>
 
-                    <!-- Preview -->
+                    <!-- Preview Section -->
                     <div class="preview-section" id="previewSection" style="display: none;">
                         <div class="preview-header">
-                            <h4><i class="fas fa-image"></i> Tanlangan rasm</h4>
-                            <button class="btn-remove" id="removeImageBtn">
-                                <i class="fas fa-times"></i>
-                            </button>
+                            <h4><i class="fas fa-images"></i> Tanlangan rasmlar</h4>
+                            <div class="preview-actions">
+                                <button class="btn-add-more" id="addMoreBtn">
+                                    <i class="fas fa-plus"></i> Qo'shish
+                                </button>
+                                <button class="btn-remove" id="removeAllBtn">
+                                    <i class="fas fa-trash"></i> Barchasini o'chirish
+                                </button>
+                            </div>
                         </div>
                         
-                        <div class="image-preview-container">
-                            <img id="imagePreview" class="image-preview">
+                        <!-- Images Grid -->
+                        <div class="images-grid" id="imagesGrid">
+                            <!-- Images will be added here -->
                         </div>
                         
+                        <!-- File Info -->
                         <div class="file-info">
                             <div class="info-row">
-                                <span>Nomi:</span>
-                                <span id="fileName">-</span>
+                                <span>Rasmlar soni:</span>
+                                <span id="imagesCount">0</span>
                             </div>
                             <div class="info-row">
-                                <span>Hajmi:</span>
-                                <span id="fileSize">-</span>
-                            </div>
-                            <div class="info-row">
-                                <span>Format:</span>
-                                <span id="fileType">-</span>
+                                <span>Umumiy hajmi:</span>
+                                <span id="totalSize">0 MB</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Convert Button -->
-                    <button class="btn-convert" id="convertBtn" disabled>
-                        <i class="fas fa-sync-alt"></i> PDFga Aylantirish
-                    </button>
+                    <!-- Convert and Share Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn-convert" id="convertBtn" style="display: none;">
+                            <i class="fas fa-sync-alt"></i> PDFga Aylantirish
+                        </button>
+                        
+                        <button class="btn-share-pdf" id="sharePdfBtn" style="display: none;">
+                            <i class="fas fa-share"></i> PDFni Ulashish
+                        </button>
+                    </div>
 
                     <!-- Progress -->
                     <div class="progress-container" id="progressContainer" style="display: none;">
@@ -132,22 +143,22 @@
                     <div class="stat">
                         <i class="fas fa-bolt"></i>
                         <div>
-                            <h3>3s</h3>
-                            <p>Tez</p>
+                            <h3>Tez</h3>
+                            <p>3 soniyada</p>
                         </div>
                     </div>
                     <div class="stat">
                         <i class="fas fa-shield-alt"></i>
                         <div>
-                            <h3>100%</h3>
-                            <p>Xavfsiz</p>
+                            <h3>Xavfsiz</h3>
+                            <p>100% mahfiylik</p>
                         </div>
                     </div>
                     <div class="stat">
                         <i class="fas fa-infinity"></i>
                         <div>
                             <h3>Cheksiz</h3>
-                            <p>Ishlatish</p>
+                            <p>Bepul va doimiy</p>
                         </div>
                     </div>
                 </div>
@@ -166,8 +177,8 @@
                     <div class="guide-step">
                         <div class="step-number">1</div>
                         <div class="step-content">
-                            <h4>Rasm tanlang</h4>
-                            <p>Galereyadan rasm tanlang yoki kameradan yangisini oling</p>
+                            <h4>Rasmlar tanlang</h4>
+                            <p>Bir yoki bir nechta rasmlarni tanlang</p>
                         </div>
                     </div>
                     
@@ -182,8 +193,8 @@
                     <div class="guide-step">
                         <div class="step-number">3</div>
                         <div class="step-content">
-                            <h4>Yuklab oling</h4>
-                            <p>Tayyor PDF avtomatik yuklanadi</p>
+                            <h4>Ulashing yoki yuklab oling</h4>
+                            <p>PDFni ulashing yoki yuklab oling</p>
                         </div>
                     </div>
                 </div>
@@ -197,15 +208,19 @@
                     <ul class="tips-list">
                         <li>
                             <i class="fas fa-check"></i>
-                            <span>10MB gacha bo'lgan rasmlarni ishlating</span>
+                            <span>Har bir rasm 10MB dan oshmasin</span>
                         </li>
                         <li>
                             <i class="fas fa-check"></i>
-                            <span>Internet talab qilinmaydi</span>
+                            <span>Bir vaqtda maksimum 10 ta rasm</span>
                         </li>
                         <li>
                             <i class="fas fa-check"></i>
                             <span>Fayllar serverga yuborilmaydi</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Internet talab qilinmaydi</span>
                         </li>
                     </ul>
                 </div>
@@ -218,23 +233,25 @@
                 <div class="section-header">
                     <i class="fas fa-comment-alt"></i>
                     <h2>Fikr bildirish</h2>
+                    <span class="feedback-timer" id="feedbackTimer" style="display: none;"></span>
                 </div>
                 
                 <div class="feedback-card">
                     <p class="feedback-description">
                         Takliflaringizni qoldiring. Har bir fikringiz biz uchun muhim.
+                        <br><small>1 soatda faqat bitta fikr yuborish mumkin</small>
                     </p>
                     
                     <form id="feedbackForm">
                         <div class="form-group">
                             <label for="feedbackMessage">
-                                <i class="fas fa-edit"></i> Xabar
+                                <i class="fas fa-edit"></i> Xabar <span class="required">*</span>
                             </label>
                             <textarea id="feedbackMessage" rows="4" placeholder="Fikringizni yozing..." required></textarea>
                         </div>
                         
                         <div class="form-group">
-                            <label><i class="fas fa-star"></i> Baholash</label>
+                            <label><i class="fas fa-star"></i> Baholash <span class="required">*</span></label>
                             <div class="rating">
                                 <div class="star" data-value="1">★</div>
                                 <div class="star" data-value="2">★</div>
@@ -242,12 +259,19 @@
                                 <div class="star" data-value="4">★</div>
                                 <div class="star" data-value="5">★</div>
                             </div>
-                            <input type="hidden" id="ratingValue" value="0">
+                            <input type="hidden" id="ratingValue" value="0" required>
+                            <div class="rating-error" style="display: none; color: var(--error); font-size: 12px; margin-top: 5px;">
+                                <i class="fas fa-exclamation-circle"></i> Iltimos, baholang
+                            </div>
                         </div>
                         
-                        <button type="submit" class="btn-submit">
+                        <button type="submit" class="btn-submit" id="feedbackSubmitBtn">
                             <i class="fas fa-paper-plane"></i> Xabarni Yuborish
                         </button>
+                        
+                        <div class="feedback-warning" style="display: none;">
+                            <i class="fas fa-clock"></i> Keyingi xabarni <span id="nextFeedbackTime"></span> da yuborishingiz mumkin
+                        </div>
                     </form>
                 </div>
             </div>
