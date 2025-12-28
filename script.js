@@ -486,16 +486,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Restore last tab
-    restoreLastTab();
-
-    // File selection
-    selectFileBtn.addEventListener('click', () => {
-        fileInput.click();
-    });
-
-    fileInput.addEventListener('change', handleFileSelect);
-
     // Add more images
     addMoreBtn.addEventListener('click', () => {
         fileInput.click();
@@ -1027,4 +1017,5 @@ if ('setAppBadge' in navigator) {
     // Initial badge update
     updateBadge();
 }
+
 
