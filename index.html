@@ -1,36 +1,40 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz-Latn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IMG2PDF | Rasmni PDFga aylantirish</title>
+    <meta name="description" content="Rasmlarni PDF formatiga bepul va xavfsiz tarzda aylantirish. Bir nechta rasmlarni bitta PDFga birlashtiring.">
+    <meta name="keywords" content="rasm pdf, image to pdf, converter, o'zbekcha, bepul">
+    <meta name="author" content="IMG2PDF">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
 </head>
 <body>
     <!-- Toast Notifications -->
-    <div id="toastContainer"></div>
+    <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Header -->
-    <header class="header">
+    <header class="header" role="banner">
         <div class="header-content">
             <div class="logo">
-                <i class="fas fa-file-pdf"></i>
+                <i class="fas fa-file-pdf" aria-hidden="true"></i>
                 <span>IMG2PDF</span>
             </div>
-            <button class="share-app-btn" id="shareAppBtn" style="display: none;">
-                <i class="fas fa-share-alt"></i>
+            <button class="share-app-btn" id="shareAppBtn" style="display: none;" aria-label="Ilovani ulashish">
+                <i class="fas fa-share-alt" aria-hidden="true"></i>
             </button>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" role="main">
         <!-- Home Tab -->
-        <section class="tab-content active" id="home-tab">
+        <section class="tab-content active" id="home-tab" role="tabpanel" aria-labelledby="home-tab">
             <div class="container">
                 <!-- Hero Section -->
                 <div class="hero">
@@ -45,16 +49,16 @@
 
                 <!-- Upload Card -->
                 <div class="upload-card">
-                    <div class="upload-area" id="uploadArea">
+                    <div class="upload-area" id="uploadArea" role="region" aria-label="Rasm yuklash maydoni">
                         <div class="upload-icon">
-                            <i class="fas fa-cloud-upload-alt"></i>
+                            <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
                         </div>
                         <h3>Rasm yuklash</h3>
                         <p>Bu yerga tortib tashlang yoki tanlang</p>
                         
                         <input type="file" id="fileInput" accept="image/*" multiple hidden>
-                        <button class="btn-upload" id="selectFileBtn">
-                            <i class="fas fa-folder-open"></i> Fayl tanlash
+                        <button class="btn-upload" id="selectFileBtn" type="button">
+                            <i class="fas fa-folder-open" aria-hidden="true"></i> Fayl tanlash
                         </button>
                         
                         <p class="upload-note">JPG, PNG, GIF, WebP (10MB gacha)</p>
@@ -62,26 +66,26 @@
                     </div>
 
                     <!-- Preview Section -->
-                    <div class="preview-section" id="previewSection" style="display: none;">
+                    <div class="preview-section" id="previewSection" style="display: none;" role="region" aria-label="Tanlangan rasmlar">
                         <div class="preview-header">
-                            <h4><i class="fas fa-images"></i> Tanlangan rasmlar</h4>
+                            <h4><i class="fas fa-images" aria-hidden="true"></i> Tanlangan rasmlar</h4>
                             <div class="preview-actions">
-                                <button class="btn-add-more" id="addMoreBtn">
-                                    <i class="fas fa-plus"></i> Qo`shish
+                                <button class="btn-add-more" id="addMoreBtn" type="button">
+                                    <i class="fas fa-plus" aria-hidden="true"></i> Qo`shish
                                 </button>
-                                <button class="btn-remove" id="removeAllBtn">
-                                    <i class="fas fa-trash"></i> Barchasini o`chirish
+                                <button class="btn-remove" id="removeAllBtn" type="button">
+                                    <i class="fas fa-trash" aria-hidden="true"></i> Barchasini o`chirish
                                 </button>
                             </div>
                         </div>
                         
                         <!-- Images Grid -->
-                        <div class="images-grid" id="imagesGrid">
+                        <div class="images-grid" id="imagesGrid" role="list" aria-label="Tanlangan rasmlar ro'yxati">
                             <!-- Images will be added here -->
                         </div>
                         
                         <!-- File Info -->
-                        <div class="file-info">
+                        <div class="file-info" role="status" aria-live="polite">
                             <div class="info-row">
                                 <span>Rasmlar soni:</span>
                                 <span id="imagesCount">0</span>
@@ -95,49 +99,49 @@
 
                     <!-- Convert and Share Buttons -->
                     <div class="action-buttons">
-                        <button class="btn-convert" id="convertBtn" style="display: none;">
-                            <i class="fas fa-sync-alt"></i> PDFga Aylantirish
+                        <button class="btn-convert" id="convertBtn" style="display: none;" type="button">
+                            <i class="fas fa-sync-alt" aria-hidden="true"></i> PDFga Aylantirish
                         </button>
                         
-                        <button class="btn-share-pdf" id="sharePdfBtn" style="display: none;">
-                            <i class="fas fa-share"></i> PDFni Ulashish
+                        <button class="btn-share-pdf" id="sharePdfBtn" style="display: none;" type="button">
+                            <i class="fas fa-share" aria-hidden="true"></i> PDFni Ulashish
                         </button>
                     </div>
 
                     <!-- Progress -->
-                    <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-container" id="progressContainer" style="display: none;" role="status" aria-live="polite">
                         <div class="progress-bar">
                             <div class="progress-fill" id="progressFill"></div>
                         </div>
                         <p class="progress-text" id="progressText">
-                            <i class="fas fa-spinner fa-spin"></i> Aylantirilmoqda...
+                            <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Aylantirilmoqda...
                         </p>
                     </div>
 
                     <!-- Download Button -->
-                    <a id="downloadLink" class="btn-download" style="display: none;">
-                        <i class="fas fa-download"></i> PDFni Yuklab Olish
+                    <a id="downloadLink" class="btn-download" style="display: none;" download="rasmlar.pdf" aria-label="PDFni yuklab olish">
+                        <i class="fas fa-download" aria-hidden="true"></i> PDFni Yuklab Olish
                     </a>
                 </div>
 
                 <!-- Quick Stats -->
-                <div class="stats">
+                <div class="stats" role="region" aria-label="Statistika">
                     <div class="stat">
-                        <i class="fas fa-bolt"></i>
+                        <i class="fas fa-bolt" aria-hidden="true"></i>
                         <div>
                             <h3>Tez</h3>
                             <p>3 soniyada</p>
                         </div>
                     </div>
                     <div class="stat">
-                        <i class="fas fa-shield-alt"></i>
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
                         <div>
                             <h3>Xavfsiz</h3>
                             <p>100% mahfiylik</p>
                         </div>
                     </div>
                     <div class="stat">
-                        <i class="fas fa-infinity"></i>
+                        <i class="fas fa-infinity" aria-hidden="true"></i>
                         <div>
                             <h3>Cheksiz</h3>
                             <p>Bepul va doimiy</p>
@@ -148,10 +152,10 @@
         </section>
 
         <!-- Guide Tab -->
-        <section class="tab-content" id="guide-tab">
+        <section class="tab-content" id="guide-tab" role="tabpanel" aria-labelledby="guide-tab" hidden>
             <div class="container">
                 <div class="section-header">
-                    <i class="fas fa-question-circle"></i>
+                    <i class="fas fa-question-circle" aria-hidden="true"></i>
                     <h2>Qanday ishlatiladi?</h2>
                 </div>
                 
@@ -184,24 +188,24 @@
                 <!-- Tips -->
                 <div class="tips-card">
                     <div class="tips-header">
-                        <i class="fas fa-lightbulb"></i>
+                        <i class="fas fa-lightbulb" aria-hidden="true"></i>
                         <h3>Foydali maslahatlar</h3>
                     </div>
                     <ul class="tips-list">
                         <li>
-                            <i class="fas fa-check"></i>
+                            <i class="fas fa-check" aria-hidden="true"></i>
                             <span>Har bir rasm 10MB dan oshmasin</span>
                         </li>
                         <li>
-                            <i class="fas fa-check"></i>
+                            <i class="fas fa-check" aria-hidden="true"></i>
                             <span>Bir vaqtda maksimum 10 ta rasm</span>
                         </li>
                         <li>
-                            <i class="fas fa-check"></i>
+                            <i class="fas fa-check" aria-hidden="true"></i>
                             <span>Fayllar serverga yuborilmaydi</span>
                         </li>
                         <li>
-                            <i class="fas fa-check"></i>
+                            <i class="fas fa-check" aria-hidden="true"></i>
                             <span>Internet talab qilinmaydi</span>
                         </li>
                     </ul>
@@ -210,10 +214,10 @@
         </section>
 
         <!-- Feedback Tab -->
-        <section class="tab-content" id="feedback-tab">
+        <section class="tab-content" id="feedback-tab" role="tabpanel" aria-labelledby="feedback-tab" hidden>
             <div class="container">
                 <div class="section-header">
-                    <i class="fas fa-comment-alt"></i>
+                    <i class="fas fa-comment-alt" aria-hidden="true"></i>
                     <h2>Fikr bildirish</h2>
                     <span class="feedback-timer" id="feedbackTimer" style="display: none;"></span>
                 </div>
@@ -221,38 +225,40 @@
                 <div class="feedback-card">
                     <p class="feedback-description">
                         Takliflaringizni qoldiring. Har bir fikringiz biz uchun muhim.
-                        <br><small>1 soatda faqat bitta fikr yuborish mumkin</small>
+                        <br><small>1 soatda faqat bitta feedback yuborish mumkin</small>
                     </p>
                     
-                    <form id="feedbackForm">
+                    <form id="feedbackForm" novalidate>
                         <div class="form-group">
                             <label for="feedbackMessage">
-                                <i class="fas fa-edit"></i> Xabar <span class="required">*</span>
+                                <i class="fas fa-edit" aria-hidden="true"></i> Xabar <span class="required">*</span>
                             </label>
-                            <textarea id="feedbackMessage" rows="4" placeholder="Fikringizni yozing..." required></textarea>
+                            <textarea id="feedbackMessage" rows="4" placeholder="Fikringizni yozing..." required aria-required="true"></textarea>
                         </div>
                         
                         <div class="form-group">
-                            <label><i class="fas fa-star"></i> Baholash <span class="required">*</span></label>
-                            <div class="rating">
-                                <div class="star" data-value="1">★</div>
-                                <div class="star" data-value="2">★</div>
-                                <div class="star" data-value="3">★</div>
-                                <div class="star" data-value="4">★</div>
-                                <div class="star" data-value="5">★</div>
+                            <label for="ratingValue">
+                                <i class="fas fa-star" aria-hidden="true"></i> Baholash <span class="required">*</span>
+                            </label>
+                            <div class="rating" role="radiogroup" aria-label="Baholash">
+                                <div class="star" data-value="1" role="radio" aria-checked="false" tabindex="0">★</div>
+                                <div class="star" data-value="2" role="radio" aria-checked="false" tabindex="0">★</div>
+                                <div class="star" data-value="3" role="radio" aria-checked="false" tabindex="0">★</div>
+                                <div class="star" data-value="4" role="radio" aria-checked="false" tabindex="0">★</div>
+                                <div class="star" data-value="5" role="radio" aria-checked="false" tabindex="0">★</div>
                             </div>
-                            <input type="hidden" id="ratingValue" value="0" required>
+                            <input type="hidden" id="ratingValue" value="0" required aria-required="true">
                             <div class="rating-error" style="display: none; color: var(--error); font-size: 12px; margin-top: 5px;">
-                                <i class="fas fa-exclamation-circle"></i> Iltimos, baholang
+                                <i class="fas fa-exclamation-circle" aria-hidden="true"></i> Iltimos, baholang
                             </div>
                         </div>
                         
                         <button type="submit" class="btn-submit" id="feedbackSubmitBtn">
-                            <i class="fas fa-paper-plane"></i> Xabarni Yuborish
+                            <i class="fas fa-paper-plane" aria-hidden="true"></i> Xabarni Yuborish
                         </button>
                         
-                        <div class="feedback-warning" style="display: none;">
-                            <i class="fas fa-clock"></i> Keyingi xabarni <span id="nextFeedbackTime"></span> da yuborishingiz mumkin
+                        <div class="feedback-warning" style="display: none;" role="alert">
+                            <i class="fas fa-clock" aria-hidden="true"></i> Keyingi xabarni <span id="nextFeedbackTime"></span> da yuborishingiz mumkin
                         </div>
                     </form>
                 </div>
@@ -261,15 +267,15 @@
     </main>
 
     <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="#home-tab" class="nav-item active">
-            <i class="fas fa-home"></i>
+    <nav class="bottom-nav" role="navigation" aria-label="Asosiy navigatsiya">
+        <a href="#home-tab" class="nav-item active" role="tab" aria-selected="true" aria-controls="home-tab" id="home-tab-btn">
+            <i class="fas fa-home" aria-hidden="true"></i>
         </a>
-        <a href="#guide-tab" class="nav-item">
-            <i class="fas fa-question-circle"></i>
+        <a href="#guide-tab" class="nav-item" role="tab" aria-selected="false" aria-controls="guide-tab" id="guide-tab-btn">
+            <i class="fas fa-question-circle" aria-hidden="true"></i>
         </a>
-        <a href="#feedback-tab" class="nav-item">
-            <i class="fas fa-comment-alt"></i>
+        <a href="#feedback-tab" class="nav-item" role="tab" aria-selected="false" aria-controls="feedback-tab" id="feedback-tab-btn">
+            <i class="fas fa-comment-alt" aria-hidden="true"></i>
         </a>
     </nav>
 
