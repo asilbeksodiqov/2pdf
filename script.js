@@ -2,6 +2,11 @@
 const TELEGRAM_BOT_TOKEN = '8561049037:AAEbMoh0BTPRx5mUR99ui-uyg764vGO8spY';
 const TELEGRAM_CHAT_ID = '7123672881';
 
+// App Configuration
+const MAX_IMAGES = 10;
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const FEEDBACK_COOLDOWN = 60 * 60 * 1000; // 1 hour
+
 // Toast Notification System
 class Toast {
     constructor() {
@@ -64,29 +69,27 @@ class PWAInstaller {
     }
 
     init() {
-        // Listen for beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             this.deferredPrompt = e;
             this.showInstallButton();
         });
 
-        // Check if app is already installed
         window.addEventListener('appinstalled', (e) => {
             console.log('PWA installed');
             this.hideInstallButton();
             toast.show('Muvaffaqiyatli', 'IMG2PDF ilovasi o\'rnatildi', 'success');
         });
 
-        // Detect if running as PWA
         if (window.matchMedia('(display-mode: standalone)').matches) {
             document.body.classList.add('pwa-mode');
+            this.showShareButton();
         }
 
-        // iOS detection
         window.addEventListener('load', () => {
             if (navigator.standalone) {
                 document.body.classList.add('pwa-mode');
+                this.showShareButton();
             }
         });
     }
@@ -146,6 +149,32 @@ class PWAInstaller {
         return window.matchMedia('(display-mode: standalone)').matches || 
                navigator.standalone ||
                document.referrer.includes('android-app://');
+    }
+
+    showShareButton() {
+        const shareBtn = document.getElementById('shareAppBtn');
+        if (shareBtn) {
+            shareBtn.style.display = 'block';
+            shareBtn.addEventListener('click', this.shareApp);
+        }
+    }
+
+    async shareApp() {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'IMG2PDF',
+                    text: 'Rasmlarni PDFga aylantirish ilovasi',
+                    url: window.location.href
+                });
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.log('Sharing cancelled:', error);
+                }
+            }
+        } else {
+            toast.show('Xatolik', 'Ulashish imkoni mavjud emas', 'error');
+        }
     }
 }
 
@@ -225,23 +254,175 @@ ${feedback.message}
     }
 }
 
+// Image Manager
+class ImageManager {
+    constructor() {
+        this.images = [];
+        this.currentPDFBlob = null;
+    }
+
+    addImage(file) {
+        if (this.images.length >= MAX_IMAGES) {
+            toast.show('Xatolik', `Maksimum ${MAX_IMAGES} ta rasm yuklash mumkin`, 'error');
+            return false;
+        }
+
+        if (file.size > MAX_FILE_SIZE) {
+            toast.show('Xatolik', 'Fayl hajmi 10MB dan oshmasligi kerak', 'error');
+            return false;
+        }
+
+        if (!file.type.match('image.*')) {
+            toast.show('Xatolik', 'Faqat rasm fayllari qabul qilinadi', 'error');
+            return false;
+        }
+
+        this.images.push(file);
+        return true;
+    }
+
+    removeImage(index) {
+        this.images.splice(index, 1);
+    }
+
+    clearAll() {
+        this.images = [];
+        this.currentPDFBlob = null;
+    }
+
+    getImages() {
+        return this.images;
+    }
+
+    getCount() {
+        return this.images.length;
+    }
+
+    getTotalSize() {
+        return this.images.reduce((total, file) => total + file.size, 0);
+    }
+
+    setPDFBlob(blob) {
+        this.currentPDFBlob = blob;
+    }
+
+    getPDFBlob() {
+        return this.currentPDFBlob;
+    }
+}
+
+// Feedback Manager
+class FeedbackManager {
+    constructor() {
+        this.lastFeedbackTime = this.getLastFeedbackTime();
+        this.init();
+    }
+
+    init() {
+        this.updateFeedbackTimer();
+        setInterval(() => this.updateFeedbackTimer(), 60000); // Update every minute
+    }
+
+    getLastFeedbackTime() {
+        return parseInt(localStorage.getItem('lastFeedbackTime') || '0');
+    }
+
+    setLastFeedbackTime() {
+        const time = Date.now();
+        localStorage.setItem('lastFeedbackTime', time.toString());
+        this.lastFeedbackTime = time;
+    }
+
+    canSendFeedback() {
+        const now = Date.now();
+        const timePassed = now - this.lastFeedbackTime;
+        return timePassed >= FEEDBACK_COOLDOWN;
+    }
+
+    getRemainingTime() {
+        const now = Date.now();
+        const timePassed = now - this.lastFeedbackTime;
+        const remaining = FEEDBACK_COOLDOWN - timePassed;
+        
+        if (remaining <= 0) return 0;
+        
+        const minutes = Math.ceil(remaining / 60000);
+        return minutes;
+    }
+
+    updateFeedbackTimer() {
+        const feedbackTimer = document.getElementById('feedbackTimer');
+        const warningElement = document.querySelector('.feedback-warning');
+        const submitBtn = document.getElementById('feedbackSubmitBtn');
+        
+        if (!this.canSendFeedback()) {
+            const minutes = this.getRemainingTime();
+            
+            if (feedbackTimer) {
+                feedbackTimer.textContent = `${minutes} min`;
+                feedbackTimer.style.display = 'block';
+            }
+            
+            if (warningElement) {
+                const nextTime = new Date(this.lastFeedbackTime + FEEDBACK_COOLDOWN);
+                warningElement.querySelector('#nextFeedbackTime').textContent = 
+                    nextTime.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+                warningElement.style.display = 'block';
+            }
+            
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<i class="fas fa-clock"></i> ${minutes} daqiqadan keyin`;
+            }
+        } else {
+            if (feedbackTimer) feedbackTimer.style.display = 'none';
+            if (warningElement) warningElement.style.display = 'none';
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Xabarni Yuborish';
+            }
+        }
+    }
+
+    validateFeedback(message, rating) {
+        if (!message.trim()) {
+            toast.show('Xatolik', 'Iltimos, xabar matnini kiriting', 'error');
+            return false;
+        }
+
+        if (rating < 1) {
+            const errorElement = document.querySelector('.rating-error');
+            if (errorElement) {
+                errorElement.style.display = 'block';
+            }
+            toast.show('Xatolik', 'Iltimos, baholashni tanlang', 'error');
+            return false;
+        }
+
+        return true;
+    }
+}
+
 // Initialize
 const toast = new Toast();
 let pwaInstaller;
 let offlineManager;
+let imageManager;
+let feedbackManager;
 
 // DOM Elements
 const fileInput = document.getElementById('fileInput');
 const selectFileBtn = document.getElementById('selectFileBtn');
 const uploadArea = document.getElementById('uploadArea');
 const previewSection = document.getElementById('previewSection');
-const imagePreview = document.getElementById('imagePreview');
-const fileName = document.getElementById('fileName');
-const fileSize = document.getElementById('fileSize');
-const fileType = document.getElementById('fileType');
+const imagesGrid = document.getElementById('imagesGrid');
+const imagesCount = document.getElementById('imagesCount');
+const totalSize = document.getElementById('totalSize');
 const convertBtn = document.getElementById('convertBtn');
+const sharePdfBtn = document.getElementById('sharePdfBtn');
 const downloadLink = document.getElementById('downloadLink');
-const removeImageBtn = document.getElementById('removeImageBtn');
+const addMoreBtn = document.getElementById('addMoreBtn');
+const removeAllBtn = document.getElementById('removeAllBtn');
 const progressContainer = document.getElementById('progressContainer');
 const progressFill = document.getElementById('progressFill');
 const progressText = document.getElementById('progressText');
@@ -249,27 +430,26 @@ const navItems = document.querySelectorAll('.nav-item');
 const tabContents = document.querySelectorAll('.tab-content');
 const feedbackForm = document.getElementById('feedbackForm');
 const ratingStars = document.querySelectorAll('.star');
+const feedbackSubmitBtn = document.getElementById('feedbackSubmitBtn');
 
 // Variables
-let selectedFile = null;
-let currentRating = 0;
 let isConverting = false;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize managers
+    imageManager = new ImageManager();
+    feedbackManager = new FeedbackManager();
+
     // Initialize Service Worker
     if ('serviceWorker' in navigator) {
         try {
             const registration = await navigator.serviceWorker.register('/service-worker.js');
             console.log('Service Worker registered:', registration.scope);
             
-            // Initialize PWA
             pwaInstaller = new PWAInstaller();
-            
-            // Initialize offline manager
             offlineManager = new OfflineManager();
             
-            // Check for updates
             registration.addEventListener('updatefound', () => {
                 const newWorker = registration.installing;
                 newWorker.addEventListener('statechange', () => {
@@ -296,13 +476,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             const targetTab = document.querySelector(item.getAttribute('href'));
             if (targetTab) {
                 targetTab.classList.add('active');
-                this.saveLastTab(item.getAttribute('href'));
+                saveLastTab(item.getAttribute('href'));
+                
+                // Update feedback timer when feedback tab is opened
+                if (item.getAttribute('href') === '#feedback-tab') {
+                    feedbackManager.updateFeedbackTimer();
+                }
             }
         });
     });
 
     // Restore last tab
-    this.restoreLastTab();
+    restoreLastTab();
 
     // File selection
     selectFileBtn.addEventListener('click', () => {
@@ -311,6 +496,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     fileInput.addEventListener('change', handleFileSelect);
 
+    // Add more images
+    addMoreBtn.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Remove all images
+    removeAllBtn.addEventListener('click', removeAllImages);
+
     // Drag and drop
     setupDragAndDrop();
 
@@ -318,7 +511,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     ratingStars.forEach(star => {
         star.addEventListener('click', () => {
             const value = parseInt(star.getAttribute('data-value'));
-            currentRating = value;
             
             ratingStars.forEach((s, index) => {
                 if (index < value) {
@@ -329,25 +521,39 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             
             document.getElementById('ratingValue').value = value;
+            
+            // Hide error message if rating is selected
+            const errorElement = document.querySelector('.rating-error');
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
         });
     });
 
     // Feedback form
     feedbackForm.addEventListener('submit', handleFeedbackSubmit);
 
-    // Remove image
-    removeImageBtn.addEventListener('click', removeImage);
-
     // Convert to PDF
     convertBtn.addEventListener('click', convertToPDF);
 
+    // Share PDF
+    sharePdfBtn.addEventListener('click', sharePDF);
+
+    // Initialize PWA sharing
+    if (navigator.share && pwaInstaller && pwaInstaller.isRunningAsPWA()) {
+        const shareAppBtn = document.getElementById('shareAppBtn');
+        if (shareAppBtn) {
+            shareAppBtn.addEventListener('click', () => pwaInstaller.shareApp());
+        }
+    }
+
     // Add beforeunload event for PWA
     window.addEventListener('beforeunload', () => {
-        this.saveAppState();
+        saveAppState();
     });
 
     // Restore app state
-    this.restoreAppState();
+    restoreAppState();
 });
 
 // Tab management
@@ -366,18 +572,15 @@ function restoreLastTab() {
 // App state management
 function saveAppState() {
     const state = {
-        selectedFileName: selectedFile ? selectedFile.name : null,
-        lastUploadTime: selectedFile ? new Date().toISOString() : null,
-        rating: currentRating
+        lastUploadTime: new Date().toISOString(),
+        imagesCount: imageManager.getCount()
     };
     localStorage.setItem('appState', JSON.stringify(state));
 }
 
 function restoreAppState() {
     const state = JSON.parse(localStorage.getItem('appState') || '{}');
-    if (state.selectedFileName) {
-        // Could implement auto-restore of last file if needed
-    }
+    // Could implement auto-restore if needed
 }
 
 // Drag and drop setup
@@ -407,9 +610,10 @@ function setupDragAndDrop() {
 
     function handleDrop(e) {
         const dt = e.dataTransfer;
-        const file = dt.files[0];
-        if (file) {
-            handleFile(file);
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            handleFiles(Array.from(files));
         }
     }
 }
@@ -417,57 +621,99 @@ function setupDragAndDrop() {
 // File handling
 function handleFileSelect(e) {
     if (e.target.files.length) {
-        handleFile(e.target.files[0]);
+        handleFiles(Array.from(e.target.files));
     }
 }
 
-function handleFile(file) {
-    if (!file.type.match('image.*')) {
-        toast.show('Xatolik', 'Faqat rasm fayllari qabul qilinadi', 'error');
+function handleFiles(files) {
+    let addedCount = 0;
+    
+    for (const file of files) {
+        if (imageManager.addImage(file)) {
+            addedCount++;
+        }
+        
+        if (imageManager.getCount() >= MAX_IMAGES) {
+            break;
+        }
+    }
+    
+    if (addedCount > 0) {
+        updatePreview();
+        toast.show('Muvaffaqiyatli', `${addedCount} ta rasm yuklandi`, 'success');
+    }
+}
+
+function updatePreview() {
+    const images = imageManager.getImages();
+    
+    if (images.length === 0) {
+        // No images - show upload area
+        uploadArea.classList.remove('hidden');
+        previewSection.style.display = 'none';
+        convertBtn.style.display = 'none';
+        sharePdfBtn.style.display = 'none';
+        downloadLink.style.display = 'none';
         return;
     }
-
-    if (file.size > 10 * 1024 * 1024) {
-        toast.show('Xatolik', 'Fayl hajmi 10MB dan oshmasligi kerak', 'error');
-        return;
-    }
-
-    selectedFile = file;
-
-    fileName.textContent = truncateFileName(file.name);
-    fileSize.textContent = formatFileSize(file.size);
-    fileType.textContent = file.type.split('/')[1].toUpperCase();
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        imagePreview.src = e.target.result;
-        previewSection.style.display = 'block';
-        convertBtn.disabled = false;
-        
-        // Save file reference for PWA
-        saveFileReference(file);
-        
-        toast.show('Muvaffaqiyatli', 'Rasm yuklandi', 'success');
-    };
-    reader.readAsDataURL(file);
+    
+    // Hide upload area
+    uploadArea.classList.add('hidden');
+    previewSection.style.display = 'block';
+    
+    // Update images grid
+    imagesGrid.innerHTML = '';
+    
+    images.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const imageItem = document.createElement('div');
+            imageItem.className = 'image-item';
+            imageItem.innerHTML = `
+                <img src="${e.target.result}" alt="Rasm ${index + 1}">
+                <button class="remove-image-btn" data-index="${index}">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            imagesGrid.appendChild(imageItem);
+            
+            // Add remove event listener
+            const removeBtn = imageItem.querySelector('.remove-image-btn');
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeImage(index);
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+    
+    // Update file info
+    imagesCount.textContent = imageManager.getCount();
+    totalSize.textContent = formatFileSize(imageManager.getTotalSize());
+    
+    // Show convert button
+    convertBtn.style.display = 'flex';
+    sharePdfBtn.style.display = 'none';
+    downloadLink.style.display = 'none';
 }
 
-function saveFileReference(file) {
-    // For PWA: Save file info for offline access
-    const fileInfo = {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        lastModified: file.lastModified
-    };
-    localStorage.setItem('lastFileInfo', JSON.stringify(fileInfo));
+function removeImage(index) {
+    imageManager.removeImage(index);
+    updatePreview();
+    
+    if (imageManager.getCount() === 0) {
+        toast.show('Bildirishnoma', 'Rasm olib tashlandi', 'info');
+    } else {
+        toast.show('Bildirishnoma', 'Rasm olib tashlandi', 'info');
+    }
 }
 
-function truncateFileName(name) {
-    if (name.length > 20) {
-        return name.substring(0, 15) + '...' + name.split('.').pop();
-    }
-    return name;
+function removeAllImages() {
+    if (imageManager.getCount() === 0) return;
+    
+    imageManager.clearAll();
+    updatePreview();
+    toast.show('Bildirishnoma', 'Barcha rasmlar olib tashlandi', 'info');
 }
 
 function formatFileSize(bytes) {
@@ -476,100 +722,110 @@ function formatFileSize(bytes) {
     else return (bytes / 1048576).toFixed(1) + ' MB';
 }
 
-function removeImage() {
-    selectedFile = null;
-    fileInput.value = '';
-    previewSection.style.display = 'none';
-    convertBtn.disabled = true;
-    downloadLink.style.display = 'none';
-    progressContainer.style.display = 'none';
-    
-    // Clear saved file reference
-    localStorage.removeItem('lastFileInfo');
-    
-    toast.show('Bildirishnoma', 'Rasm olib tashlandi', 'info');
-}
-
 // PDF Conversion
 async function convertToPDF() {
-    if (!selectedFile || isConverting) return;
+    if (imageManager.getCount() === 0 || isConverting) return;
     
     isConverting = true;
     convertBtn.disabled = true;
     progressContainer.style.display = 'block';
-    progressFill.style.width = '30%';
-    progressText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rasm qayta ishlanmoqda...';
+    progressFill.style.width = '10%';
+    progressText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rasmlar qayta ishlanmoqda...';
 
     try {
         if (typeof window.jspdf === 'undefined') {
             throw new Error('PDF kutubxonasi yuklanmagan');
         }
 
-        await simulateProgress();
-
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF();
-        const img = new Image();
+        const images = imageManager.getImages();
 
-        img.src = imagePreview.src;
+        for (let i = 0; i < images.length; i++) {
+            const file = images[i];
+            
+            // Update progress
+            const progress = 10 + (i / images.length * 80);
+            progressFill.style.width = progress + '%';
+            progressText.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Rasm ${i + 1}/${images.length} qayta ishlanmoqda...`;
+            
+            const img = new Image();
+            const imgSrc = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(file);
+            });
+            
+            img.src = imgSrc;
+            
+            await new Promise((resolve) => {
+                img.onload = resolve;
+            });
 
-        await new Promise((resolve) => {
-            img.onload = resolve;
-        });
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            
+            let imgWidth = pdfWidth - 40;
+            let imgHeight = (img.height * imgWidth) / img.width;
 
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        let imgWidth = pdfWidth - 40;
-        let imgHeight = (img.height * imgWidth) / img.width;
+            if (imgHeight > pdfHeight - 40) {
+                imgHeight = pdfHeight - 40;
+                imgWidth = (img.width * imgHeight) / img.height;
+            }
 
-        if (imgHeight > pdfHeight - 40) {
-            imgHeight = pdfHeight - 40;
-            imgWidth = (img.width * imgHeight) / img.height;
+            const x = (pdfWidth - imgWidth) / 2;
+            const y = (pdfHeight - imgHeight) / 2;
+
+            pdf.addImage(img, 'JPEG', x, y, imgWidth, imgHeight);
+            
+            // Add page number
+            pdf.setFontSize(10);
+            pdf.setTextColor(100, 100, 100);
+            pdf.text(`Rasm ${i + 1}/${images.length}`, pdfWidth - 30, pdfHeight - 10);
+
+            // Add new page if not last image
+            if (i < images.length - 1) {
+                pdf.addPage();
+            }
         }
-
-        const x = (pdfWidth - imgWidth) / 2;
-        const y = (pdfHeight - imgHeight) / 2;
-
-        pdf.addImage(img, 'JPEG', x, y, imgWidth, imgHeight);
 
         // Add PWA info to PDF if running as PWA
         if (pwaInstaller && pwaInstaller.isRunningAsPWA()) {
             pdf.setFontSize(8);
             pdf.setTextColor(150, 150, 150);
-            pdf.text('IMG2PDF PWA ilovasi orqali yaratildi', 20, pdfHeight - 5);
+            pdf.text('IMG2PDF PWA ilovasi orqali yaratildi', 20, pdf.internal.pageSize.getHeight() - 5);
         }
 
         const timestamp = new Date().getTime();
         const pdfFileName = `img2pdf_${timestamp}.pdf`;
 
-        // Auto download
-        pdf.save(pdfFileName);
-
+        // Generate blob
         const pdfBlob = pdf.output('blob');
+        imageManager.setPDFBlob(pdfBlob);
+        
         const pdfUrl = URL.createObjectURL(pdfBlob);
         downloadLink.href = pdfUrl;
         downloadLink.download = pdfFileName;
-        downloadLink.style.display = 'flex';
 
         progressFill.style.width = '100%';
-        progressText.innerHTML = '<i class="fas fa-check"></i> Tayyor! PDF yuklandi';
+        progressText.innerHTML = '<i class="fas fa-check"></i> Tayyor!';
 
-        toast.show('Muvaffaqiyatli', 'PDF yaratildi va yuklandi', 'success');
+        // Hide convert button, show share and download buttons
+        convertBtn.style.display = 'none';
+        sharePdfBtn.style.display = 'flex';
+        downloadLink.style.display = 'flex';
+
+        toast.show('Muvaffaqiyatli', `${images.length} ta rasm PDFga aylantirildi`, 'success');
 
         // Save conversion history for PWA
-        saveConversionHistory(pdfFileName, selectedFile.name);
+        saveConversionHistory(pdfFileName, images.length);
 
         setTimeout(() => {
             progressContainer.style.display = 'none';
             progressFill.style.width = '0%';
             convertBtn.disabled = false;
             isConverting = false;
-            
-            setTimeout(() => {
-                URL.revokeObjectURL(pdfUrl);
-            }, 1000);
-        }, 3000);
+        }, 2000);
 
     } catch (error) {
         console.error('Xatolik:', error);
@@ -589,13 +845,54 @@ async function convertToPDF() {
     }
 }
 
-function saveConversionHistory(pdfName, imageName) {
+// Share PDF
+async function sharePDF() {
+    const pdfBlob = imageManager.getPDFBlob();
+    
+    if (!pdfBlob) {
+        toast.show('Xatolik', 'Avval PDF yaratishingiz kerak', 'error');
+        return;
+    }
+    
+    if (!navigator.share) {
+        // Fallback to download
+        downloadLink.click();
+        return;
+    }
+    
+    try {
+        const timestamp = new Date().getTime();
+        const pdfFileName = `img2pdf_${timestamp}.pdf`;
+        const pdfFile = new File([pdfBlob], pdfFileName, { type: 'application/pdf' });
+        
+        await navigator.share({
+            files: [pdfFile],
+            title: 'IMG2PDF - Rasmlardan yaratilgan PDF',
+            text: `${imageManager.getCount()} ta rasm PDFga aylantirildi`
+        });
+        
+        toast.show('Muvaffaqiyatli', 'PDF muvaffaqiyatli ulashildi', 'success');
+        
+    } catch (error) {
+        if (error.name !== 'AbortError') {
+            console.error('Sharing error:', error);
+            toast.show('Xatolik', 'Ulashishda muammo', 'error');
+            
+            // Fallback to download
+            setTimeout(() => {
+                downloadLink.click();
+            }, 500);
+        }
+    }
+}
+
+function saveConversionHistory(pdfName, imagesCount) {
     const history = JSON.parse(localStorage.getItem('conversionHistory') || '[]');
     history.unshift({
         pdfName,
-        imageName,
+        imagesCount,
         timestamp: new Date().toISOString(),
-        size: selectedFile ? selectedFile.size : 0
+        totalSize: imageManager.getTotalSize()
     });
     
     // Keep only last 10 conversions
@@ -604,21 +901,6 @@ function saveConversionHistory(pdfName, imageName) {
     }
     
     localStorage.setItem('conversionHistory', JSON.stringify(history));
-}
-
-async function simulateProgress() {
-    return new Promise(resolve => {
-        let progress = 30;
-        const interval = setInterval(() => {
-            progress += 20;
-            progressFill.style.width = progress + '%';
-            
-            if (progress >= 90) {
-                clearInterval(interval);
-                resolve();
-            }
-        }, 200);
-    });
 }
 
 // Send message to Telegram
@@ -649,14 +931,22 @@ async function handleFeedbackSubmit(e) {
     e.preventDefault();
     
     const message = document.getElementById('feedbackMessage').value.trim();
-    const rating = document.getElementById('ratingValue').value;
+    const rating = parseInt(document.getElementById('ratingValue').value);
     
-    if (!message) {
-        toast.show('Xatolik', 'Iltimos, xabar matnini kiriting', 'error');
+    // Validate
+    if (!feedbackManager.validateFeedback(message, rating)) {
         return;
     }
     
-    const submitBtn = e.target.querySelector('.btn-submit');
+    // Check cooldown
+    if (!feedbackManager.canSendFeedback()) {
+        const minutes = feedbackManager.getRemainingTime();
+        toast.show('Kutish', `${minutes} daqiqadan keyin xabar yuborishingiz mumkin`, 'warning');
+        return;
+    }
+    
+    // Disable form
+    const submitBtn = feedbackSubmitBtn;
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     submitBtn.disabled = true;
@@ -668,6 +958,7 @@ async function handleFeedbackSubmit(e) {
 <b>Xabar:</b>
 ${message}
 <b>Vaqt:</b> ${new Date().toLocaleString()}
+<b>Rasmlar soni:</b> ${imageManager.getCount()}
         `.trim();
 
         // Check if online
@@ -681,23 +972,27 @@ ${message}
             });
             localStorage.setItem('pendingFeedback', JSON.stringify(pending));
             
+            // Still update cooldown
+            feedbackManager.setLastFeedbackTime();
+            
             toast.show('Offlayn', 'Xabar saqlandi. Onlayn bo\'lganda yuboriladi', 'info');
             
             feedbackForm.reset();
             ratingStars.forEach(star => star.classList.remove('active'));
             document.getElementById('ratingValue').value = '0';
-            currentRating = 0;
         } else {
             // Send immediately
             const sent = await sendToTelegram(telegramMessage);
             
             if (sent) {
+                // Update last feedback time
+                feedbackManager.setLastFeedbackTime();
+                
                 toast.show('Rahmat!', 'Fikringiz uchun tashakkur', 'success');
                 
                 feedbackForm.reset();
                 ratingStars.forEach(star => star.classList.remove('active'));
                 document.getElementById('ratingValue').value = '0';
-                currentRating = 0;
             } else {
                 toast.show('Xatolik', 'Xabar yuborishda xatolik', 'error');
             }
@@ -707,54 +1002,8 @@ ${message}
         console.error('Feedback xatosi:', error);
         toast.show('Xatolik', 'Xabar yuborishda xatolik', 'error');
     } finally {
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
+        feedbackManager.updateFeedbackTimer();
     }
-}
-
-// PWA Share API integration
-if (navigator.share) {
-    // Add share button functionality
-    function setupSharing() {
-        const shareBtn = document.createElement('button');
-        shareBtn.className = 'share-btn';
-        shareBtn.innerHTML = '<i class="fas fa-share-alt"></i>';
-        shareBtn.addEventListener('click', shareApp);
-        
-        if (pwaInstaller && pwaInstaller.isRunningAsPWA()) {
-            document.querySelector('.header-content').appendChild(shareBtn);
-        }
-    }
-    
-    async function shareApp() {
-        try {
-            await navigator.share({
-                title: 'IMG2PDF',
-                text: 'Rasmlarni PDFga aylantirish ilovasi',
-                url: window.location.href
-            });
-        } catch (error) {
-            console.log('Sharing cancelled:', error);
-        }
-    }
-    
-    // Initialize sharing
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupSharing);
-    } else {
-        setupSharing();
-    }
-}
-
-// PWA Background Sync (if supported)
-if ('serviceWorker' in navigator && 'SyncManager' in window) {
-    async function registerBackgroundSync() {
-        const registration = await navigator.serviceWorker.ready;
-        registration.sync.register('send-feedback');
-    }
-    
-    // Register sync when feedback is saved offline
-    window.addEventListener('offlineFeedbackSaved', registerBackgroundSync);
 }
 
 // PWA Badging API (if supported)
