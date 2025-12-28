@@ -1,13 +1,21 @@
 // Telegram Bot Configuration
+// Eslatma: Tokenlarni server tomonda saqlash tavsiya etiladi
 const TELEGRAM_BOT_TOKEN = '8561049037:AAEbMoh0BTPRx5mUR99ui-uyg764vGO8spY';
 const TELEGRAM_CHAT_ID = '7123672881';
+
+// Global variables declaration (QO'SHIMCHA)
+let imageManager;
+let feedbackManager;
+let toast;
+let offlineManager;
+// pwaInstaller - agar PWA uchun alohida fayl bo'lsa
 
 // App Configuration
 const MAX_IMAGES = 10;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const FEEDBACK_COOLDOWN = 60 * 60 * 1000; // 1 hour
 
-// Toast Notification System
+// Toast Notification System (NO CHANGE)
 class Toast {
     constructor() {
         this.container = document.getElementById('toastContainer') || this.createToastContainer();
@@ -22,12 +30,12 @@ class Toast {
     }
 
     show(title, message, type = 'info', duration = 3000) {
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
+        const toastElement = document.createElement('div');
+        toastElement.className = `toast ${type}`;
         
         const icon = this.getIcon(type);
         
-        toast.innerHTML = `
+        toastElement.innerHTML = `
             <i class="fas ${icon}"></i>
             <div class="toast-content">
                 <div class="toast-title">${title}</div>
@@ -35,19 +43,19 @@ class Toast {
             </div>
         `;
 
-        this.container.appendChild(toast);
+        this.container.appendChild(toastElement);
 
         // Auto remove
         setTimeout(() => {
-            toast.style.opacity = '0';
+            toastElement.style.opacity = '0';
             setTimeout(() => {
-                if (toast.parentNode === this.container) {
-                    this.container.removeChild(toast);
+                if (toastElement.parentNode === this.container) {
+                    this.container.removeChild(toastElement);
                 }
             }, 300);
         }, duration);
 
-        return toast;
+        return toastElement;
     }
 
     getIcon(type) {
@@ -60,7 +68,7 @@ class Toast {
     }
 }
 
-// Offline Manager
+// Offline Manager (NO CHANGE)
 class OfflineManager {
     constructor() {
         this.isOnline = navigator.onLine;
@@ -136,7 +144,7 @@ ${feedback.message}
     }
 }
 
-// Image Manager
+// Image Manager (NO CHANGE)
 class ImageManager {
     constructor() {
         this.images = [];
@@ -193,7 +201,7 @@ class ImageManager {
     }
 }
 
-// Feedback Manager
+// Feedback Manager (NO CHANGE)
 class FeedbackManager {
     constructor() {
         this.lastFeedbackTime = this.getLastFeedbackTime();
@@ -310,11 +318,26 @@ const feedbackSubmitBtn = document.getElementById('feedbackSubmitBtn');
 // Variables
 let isConverting = false;
 
+// QO'SHIMCHA FUNKSIYALAR E'LON QILISH
+function restoreLastTab() {
+    const lastTab = localStorage.getItem('lastTab') || '#home-tab';
+    const tabElement = document.querySelector(`[href="${lastTab}"]`);
+    if (tabElement) {
+        tabElement.click();
+    }
+}
+
+function saveLastTab(tabId) {
+    localStorage.setItem('lastTab', tabId);
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize managers
+    toast = new Toast();
     imageManager = new ImageManager();
     feedbackManager = new FeedbackManager();
+    offlineManager = new OfflineManager();
 
     // Bottom Navigation
     navItems.forEach(item => {
@@ -393,20 +416,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         saveAppState();
     });
 
-    // Restore app state
-    restoreAppState();
+    // Restore last tab
+    restoreLastTab();
+    
+    // Update badge if supported
+    if ('setAppBadge' in navigator) {
+        updateBadge();
+    }
 });
 
-// Tab management
-function saveLastTab(tabId) {
-    localStorage.setItem('lastTab', tabId);
-}
-
-function restoreLastTab() {
-    const lastTab = localStorage.getItem('lastTab') || '#home-tab';
-    const tabElement = document.querySelector(`[href="${lastTab}"]`);
-    if (tabElement) {
-        tabElement.click();
+// QO'SHIMCHA: Badge update funksiyasi
+function updateBadge() {
+    const pending = JSON.parse(localStorage.getItem('pendingFeedback') || '[]');
+    if (pending.length > 0) {
+        navigator.setAppBadge(pending.length).catch(console.error);
+    } else {
+        navigator.clearAppBadge().catch(console.error);
     }
 }
 
@@ -417,11 +442,6 @@ function saveAppState() {
         imagesCount: imageManager.getCount()
     };
     localStorage.setItem('appState', JSON.stringify(state));
-}
-
-function restoreAppState() {
-    const state = JSON.parse(localStorage.getItem('appState') || '{}');
-    // Could implement auto-restore if needed
 }
 
 // Drag and drop setup
@@ -490,16 +510,17 @@ function updatePreview() {
     
     if (images.length === 0) {
         // No images - show upload area
-        uploadArea.classList.remove('hidden');
         previewSection.style.display = 'none';
         convertBtn.style.display = 'none';
         sharePdfBtn.style.display = 'none';
         downloadLink.style.display = 'none';
+        // CSS da .hidden classi bo'lsa, quyidagilarni ishlating:
+        // uploadArea.classList.remove('hidden');
         return;
     }
     
     // Hide upload area
-    uploadArea.classList.add('hidden');
+    // uploadArea.classList.add('hidden');
     previewSection.style.display = 'block';
     
     // Update images grid
@@ -512,7 +533,7 @@ function updatePreview() {
             imageItem.className = 'image-item';
             imageItem.innerHTML = `
                 <img src="${e.target.result}" alt="Rasm ${index + 1}">
-                <button class="remove-image-btn" data-index="${index}">
+                <button class="remove-image-btn" data-index="${index}" type="button" aria-label="Rasmni o'chirish">
                     <i class="fas fa-times"></i>
                 </button>
             `;
@@ -626,11 +647,12 @@ async function convertToPDF() {
         }
 
         // Add PWA info to PDF if running as PWA
-        if (pwaInstaller && pwaInstaller.isRunningAsPWA()) {
-            pdf.setFontSize(8);
-            pdf.setTextColor(150, 150, 150);
-            pdf.text('IMG2PDF PWA ilovasi orqali yaratildi', 20, pdf.internal.pageSize.getHeight() - 5);
-        }
+        // pwaInstaller mavjud bo'lsa:
+        // if (window.pwaInstaller && window.pwaInstaller.isRunningAsPWA) {
+        //     pdf.setFontSize(8);
+        //     pdf.setTextColor(150, 150, 150);
+        //     pdf.text('IMG2PDF PWA ilovasi orqali yaratildi', 20, pdf.internal.pageSize.getHeight() - 5);
+        // }
 
         const timestamp = new Date().getTime();
         const pdfFileName = `img2pdf_${timestamp}.pdf`;
@@ -789,7 +811,7 @@ async function handleFeedbackSubmit(e) {
     
     try {
         const telegramMessage = `
-<b>Feedback | IMG2PDF (sodiqov.uz/2pdf</b>
+<b>Feedback | IMG2PDF (sodiqov.uz/2pdf)</b>
 <b>Xabar:</b>
 ${message}
 <b>Reyting:</b> ${rating}/5
@@ -814,6 +836,11 @@ ${message}
             feedbackForm.reset();
             ratingStars.forEach(star => star.classList.remove('active'));
             document.getElementById('ratingValue').value = '0';
+            
+            // Update badge
+            if ('setAppBadge' in navigator) {
+                updateBadge();
+            }
         } else {
             // Send immediately
             const sent = await sendToTelegram(telegramMessage);
@@ -836,22 +863,15 @@ ${message}
         console.error('Feedback xatosi:', error);
         toast.show('Xatolik!', 'Xabar yuborishda xatolik', 'error');
     } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
         feedbackManager.updateFeedbackTimer();
     }
 }
 
 // PWA Badging API (if supported)
 if ('setAppBadge' in navigator) {
-    function updateBadge() {
-        const pending = JSON.parse(localStorage.getItem('pendingFeedback') || '[]');
-        if (pending.length > 0) {
-            navigator.setAppBadge(pending.length);
-        } else {
-            navigator.clearAppBadge();
-        }
-    }
-    
-    // Update badge when feedback changes
+    // Update badge when localStorage changes
     const originalSetItem = localStorage.setItem;
     localStorage.setItem = function(key, value) {
         originalSetItem.apply(this, arguments);
@@ -859,7 +879,4 @@ if ('setAppBadge' in navigator) {
             updateBadge();
         }
     };
-    
-    // Initial badge update
-    updateBadge();
 }
