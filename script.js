@@ -767,11 +767,6 @@ async function convertToPDF() {
             const y = (pdfHeight - imgHeight) / 2;
 
             pdf.addImage(img, 'JPEG', x, y, imgWidth, imgHeight);
-            
-            // Add page number
-            pdf.setFontSize(10);
-            pdf.setTextColor(100, 100, 100);
-            pdf.text(`Rasm ${i + 1}/${images.length}`, pdfWidth - 30, pdfHeight - 10);
 
             // Add new page if not last image
             if (i < images.length - 1) {
@@ -858,7 +853,7 @@ async function sharePDF() {
         await navigator.share({
             files: [pdfFile],
             title: 'IMG2PDF - Rasmlardan yaratilgan PDF',
-            text: `${imageManager.getCount()} ta rasm PDFga aylantirildi`
+            text: `sodiqov.uz/2pdf orqali tayyorlandi.`
         });
         
         toast.show('Muvaffaqiyatli', 'PDF muvaffaqiyatli ulashildi', 'success');
@@ -1017,5 +1012,6 @@ if ('setAppBadge' in navigator) {
     // Initial badge update
     updateBadge();
 }
+
 
 
