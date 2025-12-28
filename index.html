@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IMG2PDF | Rasmni PDFga aylantirish</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Toast Notifications -->
+    <div id="toastContainer"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-file-pdf"></i>
+                <span>IMG2PDF</span>
+            </div>
+            <button class="share-app-btn" id="shareAppBtn" style="display: none;">
+                <i class="fas fa-share-alt"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Tab -->
+        <section class="tab-content active" id="home-tab">
+            <div class="container">
+                <!-- Hero Section -->
+                <div class="hero">
+                    <h1 class="hero-title">
+                        <span class="gradient-text">Rasm</span>ni 
+                        <span class="gradient-text">PDF</span>ga
+                    </h1>
+                    <p class="hero-subtitle">
+                        Bir nechta rasmlarni bitta PDFga aylantiring
+                    </p>
+                </div>
+
+                <!-- Upload Card -->
+                <div class="upload-card">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>Rasm yuklash</h3>
+                        <p>Bu yerga tortib tashlang yoki tanlang</p>
+                        
+                        <input type="file" id="fileInput" accept="image/*" multiple hidden>
+                        <button class="btn-upload" id="selectFileBtn">
+                            <i class="fas fa-folder-open"></i> Fayl tanlash
+                        </button>
+                        
+                        <p class="upload-note">JPG, PNG, GIF, WebP (10MB gacha)</p>
+                        <p class="upload-note">Bir nechta rasm tanlash mumkin (max: 10 ta)</p>
+                    </div>
+
+                    <!-- Preview Section -->
+                    <div class="preview-section" id="previewSection" style="display: none;">
+                        <div class="preview-header">
+                            <h4><i class="fas fa-images"></i> Tanlangan rasmlar</h4>
+                            <div class="preview-actions">
+                                <button class="btn-add-more" id="addMoreBtn">
+                                    <i class="fas fa-plus"></i> Qo`shish
+                                </button>
+                                <button class="btn-remove" id="removeAllBtn">
+                                    <i class="fas fa-trash"></i> Barchasini o`chirish
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Images Grid -->
+                        <div class="images-grid" id="imagesGrid">
+                            <!-- Images will be added here -->
+                        </div>
+                        
+                        <!-- File Info -->
+                        <div class="file-info">
+                            <div class="info-row">
+                                <span>Rasmlar soni:</span>
+                                <span id="imagesCount">0</span>
+                            </div>
+                            <div class="info-row">
+                                <span>Umumiy hajmi:</span>
+                                <span id="totalSize">0 MB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Convert and Share Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn-convert" id="convertBtn" style="display: none;">
+                            <i class="fas fa-sync-alt"></i> PDFga Aylantirish
+                        </button>
+                        
+                        <button class="btn-share-pdf" id="sharePdfBtn" style="display: none;">
+                            <i class="fas fa-share"></i> PDFni Ulashish
+                        </button>
+                    </div>
+
+                    <!-- Progress -->
+                    <div class="progress-container" id="progressContainer" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <p class="progress-text" id="progressText">
+                            <i class="fas fa-spinner fa-spin"></i> Aylantirilmoqda...
+                        </p>
+                    </div>
+
+                    <!-- Download Button -->
+                    <a id="downloadLink" class="btn-download" style="display: none;">
+                        <i class="fas fa-download"></i> PDFni Yuklab Olish
+                    </a>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="stats">
+                    <div class="stat">
+                        <i class="fas fa-bolt"></i>
+                        <div>
+                            <h3>Tez</h3>
+                            <p>3 soniyada</p>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-shield-alt"></i>
+                        <div>
+                            <h3>Xavfsiz</h3>
+                            <p>100% mahfiylik</p>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-infinity"></i>
+                        <div>
+                            <h3>Cheksiz</h3>
+                            <p>Bepul va doimiy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Guide Tab -->
+        <section class="tab-content" id="guide-tab">
+            <div class="container">
+                <div class="section-header">
+                    <i class="fas fa-question-circle"></i>
+                    <h2>Qanday ishlatiladi?</h2>
+                </div>
+                
+                <div class="guide-card">
+                    <div class="guide-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Rasmlar tanlang</h4>
+                            <p>Bir yoki bir nechta rasmlarni tanlang</p>
+                        </div>
+                    </div>
+                    
+                    <div class="guide-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>PDFga aylantiring</h4>
+                            <p>"PDFga Aylantirish" tugmasini bosing</p>
+                        </div>
+                    </div>
+                    
+                    <div class="guide-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Ulashing yoki yuklab oling</h4>
+                            <p>PDFni ulashing yoki yuklab oling</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="tips-card">
+                    <div class="tips-header">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3>Foydali maslahatlar</h3>
+                    </div>
+                    <ul class="tips-list">
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Har bir rasm 10MB dan oshmasin</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Bir vaqtda maksimum 10 ta rasm</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Fayllar serverga yuborilmaydi</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Internet talab qilinmaydi</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feedback Tab -->
+        <section class="tab-content" id="feedback-tab">
+            <div class="container">
+                <div class="section-header">
+                    <i class="fas fa-comment-alt"></i>
+                    <h2>Fikr bildirish</h2>
+                    <span class="feedback-timer" id="feedbackTimer" style="display: none;"></span>
+                </div>
+                
+                <div class="feedback-card">
+                    <p class="feedback-description">
+                        Takliflaringizni qoldiring. Har bir fikringiz biz uchun muhim.
+                        <br><small>1 soatda faqat bitta fikr yuborish mumkin</small>
+                    </p>
+                    
+                    <form id="feedbackForm">
+                        <div class="form-group">
+                            <label for="feedbackMessage">
+                                <i class="fas fa-edit"></i> Xabar <span class="required">*</span>
+                            </label>
+                            <textarea id="feedbackMessage" rows="4" placeholder="Fikringizni yozing..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-star"></i> Baholash <span class="required">*</span></label>
+                            <div class="rating">
+                                <div class="star" data-value="1">★</div>
+                                <div class="star" data-value="2">★</div>
+                                <div class="star" data-value="3">★</div>
+                                <div class="star" data-value="4">★</div>
+                                <div class="star" data-value="5">★</div>
+                            </div>
+                            <input type="hidden" id="ratingValue" value="0" required>
+                            <div class="rating-error" style="display: none; color: var(--error); font-size: 12px; margin-top: 5px;">
+                                <i class="fas fa-exclamation-circle"></i> Iltimos, baholang
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-submit" id="feedbackSubmitBtn">
+                            <i class="fas fa-paper-plane"></i> Xabarni Yuborish
+                        </button>
+                        
+                        <div class="feedback-warning" style="display: none;">
+                            <i class="fas fa-clock"></i> Keyingi xabarni <span id="nextFeedbackTime"></span> da yuborishingiz mumkin
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#home-tab" class="nav-item active">
+            <i class="fas fa-home"></i>
+        </a>
+        <a href="#guide-tab" class="nav-item">
+            <i class="fas fa-question-circle"></i>
+        </a>
+        <a href="#feedback-tab" class="nav-item">
+            <i class="fas fa-comment-alt"></i>
+        </a>
+    </nav>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Main JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
