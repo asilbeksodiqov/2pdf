@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2PDF - Rasmlarni PDF ga aylantiring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2D4CFF;
+            --primary-dark: #1A2F9F;
+            --primary-light: #5B75FF;
+            --secondary: #00D9B4;
+            --bg-main: #FAFBFD;
+            --bg-card: #FFFFFF;
+            --text-primary: #1A1F36;
+            --text-secondary: #6B7280;
+            --text-light: #9CA3AF;
+            --border: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            --shadow-sm: 0 2px 8px rgba(45, 76, 255, 0.08);
+            --shadow-md: 0 8px 24px rgba(45, 76, 255, 0.12);
+            --shadow-lg: 0 16px 48px rgba(45, 76, 255, 0.15);
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(45, 76, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(0, 217, 180, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            padding: 24px 24px 16px;
+            animation: fadeInDown 0.6s ease-out;
+            position: relative;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-button {
+            position: absolute;
+            left: 24px;
+            top: 24px;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .back-button:hover {
+            border-color: var(--primary);
+            transform: translateX(-2px);
+        }
+
+        .back-button svg {
+            width: 20px;
+            height: 20px;
+            color: var(--text-primary);
+        }
+
+        .back-button:hover svg {
+            color: var(--primary);
+        }
+
+        .back-button.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-circle {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .logo-circle svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .logo-text {
+            font-family: 'Manrope', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .tagline {
+            text-align: center;
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            padding-bottom: 80px;
+        }
+
+        /* Upload Area */
+        .upload-section {
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .upload-area {
+            background: var(--bg-card);
+            border: 2px dashed var(--border);
+            border-radius: 20px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(45, 76, 255, 0.05), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .upload-area:hover::before {
+            left: 100%;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(45, 76, 255, 0.03);
+            border-style: solid;
+        }
+
+        .upload-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(45, 76, 255, 0.1), rgba(0, 217, 180, 0.1));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .upload-icon {
+            width: 40px;
+            height: 40px;
+            color: var(--primary);
+        }
+
+        .upload-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .upload-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .upload-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .upload-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: linear-gradient(135deg, rgba(45, 76, 255, 0.05), rgba(0, 217, 180, 0.05));
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 16px;
+            border: 2px solid rgba(45, 76, 255, 0.1);
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .info-icon svg {
+            width: 16px;
+            height: 16px;
+            color: white;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Preview Grid */
+        .preview-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .preview-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .preview-count {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--bg-card);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .preview-item img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            display: block;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .preview-item:hover .preview-overlay {
+            opacity: 1;
+        }
+
+        .remove-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            background: rgba(239, 68, 68, 0.95);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            opacity: 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .preview-item:hover .remove-button {
+            opacity: 1;
+        }
+
+        .remove-button:hover {
+            transform: scale(1.1);
+            background: var(--error);
+        }
+
+        .remove-button svg {
+            width: 16px;
+            height: 16px;
+            color: white;
+        }
+
+        .add-more-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1;
+            background: var(--bg-card);
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            order: -1;
+        }
+
+        .add-more-button:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .add-more-button svg {
+            width: 32px;
+            height: 32px;
+            color: var(--primary);
+        }
+
+        /* PDF Preview */
+        .pdf-preview-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .pdf-preview-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .pdf-icon-wrapper {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, rgba(45, 76, 255, 0.1), rgba(0, 217, 180, 0.1));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pdf-icon-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(45, 76, 255, 0.15), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        .pdf-icon-wrapper svg {
+            width: 60px;
+            height: 60px;
+            color: var(--primary);
+        }
+
+        .pdf-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .pdf-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .pdf-stats {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .pdf-stat {
+            background: var(--bg-main);
+            padding: 16px 24px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .pdf-stat-value {
+            font-family: 'Manrope', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .pdf-stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 16px 24px;
+            box-shadow: 0 -4px 24px rgba(45, 76, 255, 0.08);
+            z-index: 100;
+        }
+
+        .action-buttons-inner {
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-convert {
+            flex: 1;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-convert::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-convert:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-convert:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-convert:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-convert svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 16px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: white;
+            padding: 16px 24px;
+            border-radius: 14px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%;
+            border: 1px solid var(--border);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.success .toast-icon {
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--error);
+        }
+
+        .toast.error .toast-icon {
+            color: var(--error);
+        }
+
+        .toast.info .toast-icon {
+            color: var(--primary);
+        }
+
+        .toast-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .footer-email {
+            font-family: 'Manrope', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-email:hover {
+            color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 480px) {
+            .preview-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 10px;
+            }
+
+            .upload-area {
+                padding: 36px 16px;
+            }
+
+            .pdf-stats {
+                flex-direction: column;
+            }
+
+            .pdf-stat {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast -->
+    <div id="toast" class="toast">
+        <svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span class="toast-text"></span>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-button hidden" id="backButton" onclick="goBack()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <div class="logo-container">
+                <div class="logo-circle">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <span class="logo-text">2PDF</span>
+            </div>
+            <p class="tagline">Rasmlarni bir zumda PDF ga aylantiring</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Upload Section -->
+            <div id="uploadSection" class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon-wrapper">
+                        <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                    </div>
+                    <h2 class="upload-title">Rasmlarni yuklang</h2>
+                    <p class="upload-subtitle">Fayllarni sudrab oling yoki bosing</p>
+                    <button class="upload-button" onclick="document.getElementById('fileInput').click()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span>Rasmlarni tanlang</span>
+                    </button>
+                    <input type="file" id="fileInput" class="file-input" accept="image/*" multiple>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-row">
+                        <div class="info-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <p class="info-text">Tez va xavfsiz - barcha jarayon brauzeringizda</p>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <p class="info-text">Rasmlaringiz to'liq maxfiy va xavfsiz</p>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <p class="info-text">Bir nechta rasmni bitta PDF ga birlashtiring</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div id="previewSection" class="preview-section">
+                <div class="preview-header">
+                    <h3 class="preview-title">Tanlangan rasmlar</h3>
+                    <span class="preview-count" id="imageCount">0 ta rasm</span>
+                </div>
+                <div class="preview-grid" id="previewGrid">
+                    <!-- Preview items will be added here -->
+                </div>
+            </div>
+
+            <!-- PDF Preview Section -->
+            <div id="pdfPreviewSection" class="pdf-preview-section">
+                <div class="pdf-preview-card">
+                    <div class="pdf-icon-wrapper">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="pdf-title">PDF tayyor!</h3>
+                    <p class="pdf-info">Hujjatingiz muvaffaqiyatli yaratildi</p>
+                    <div class="pdf-stats">
+                        <div class="pdf-stat">
+                            <span class="pdf-stat-value" id="pdfPageCount">0</span>
+                            <span class="pdf-stat-label">Sahifa</span>
+                        </div>
+                        <div class="pdf-stat">
+                            <span class="pdf-stat-value" id="pdfSize">0 KB</span>
+                            <span class="pdf-stat-label">Hajm</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons hidden" id="actionButtons">
+            <div class="action-buttons-inner">
+                <button class="btn-convert" id="convertBtn" onclick="convertToPDF()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span id="convertBtnText">PDF yaratish</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="action-buttons hidden" id="pdfButtons">
+            <div class="action-buttons-inner">
+                <button class="btn-convert" id="downloadBtn" onclick="downloadPDF()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    <span>Yuklab olish</span>
+                </button>
+                <button class="btn-secondary" id="shareBtn" onclick="sharePDF()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                    </svg>
+                    <span>Ulashish</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p class="footer-text">Savol va takliflar uchun</p>
+            <a href="mailto:info@sodiqov.uz" class="footer-email">info@sodiqov.uz</a>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        let images = [];
+        let pdfBlob = null;
+
+        const elements = {
+            uploadArea: document.getElementById('uploadArea'),
+            fileInput: document.getElementById('fileInput'),
+            uploadSection: document.getElementById('uploadSection'),
+            previewSection: document.getElementById('previewSection'),
+            pdfPreviewSection: document.getElementById('pdfPreviewSection'),
+            previewGrid: document.getElementById('previewGrid'),
+            imageCount: document.getElementById('imageCount'),
+            actionButtons: document.getElementById('actionButtons'),
+            pdfButtons: document.getElementById('pdfButtons'),
+            convertBtn: document.getElementById('convertBtn'),
+            convertBtnText: document.getElementById('convertBtnText'),
+            pdfPageCount: document.getElementById('pdfPageCount'),
+            pdfSize: document.getElementById('pdfSize'),
+            backButton: document.getElementById('backButton')
+        };
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastText = toast.querySelector('.toast-text');
+            const toastIcon = toast.querySelector('.toast-icon');
+            
+            let iconPath = '';
+            if (type === 'success') {
+                iconPath = 'M5 13l4 4L19 7';
+            } else if (type === 'error') {
+                iconPath = 'M6 18L18 6M6 6l12 12';
+            } else {
+                iconPath = 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
+            }
+            
+            toastIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconPath}"></path>`;
+            toast.className = `toast ${type}`;
+            toastText.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // File handling
+        elements.fileInput.addEventListener('change', handleFiles);
+
+        elements.uploadArea.addEventListener('click', (e) => {
+            if (e.target === elements.uploadArea || e.target.closest('.upload-icon-wrapper') || e.target.closest('.upload-title') || e.target.closest('.upload-subtitle')) {
+                elements.fileInput.click();
+            }
+        });
+
+        // Drag and drop
+        elements.uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            elements.uploadArea.classList.add('dragover');
+        });
+
+        elements.uploadArea.addEventListener('dragleave', () => {
+            elements.uploadArea.classList.remove('dragover');
+        });
+
+        elements.uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            elements.uploadArea.classList.remove('dragover');
+            elements.fileInput.files = e.dataTransfer.files;
+            handleFiles();
+        });
+
+        function handleFiles() {
+            const files = Array.from(elements.fileInput.files);
+            const validImages = files.filter(file => file.type.startsWith('image/'));
+
+            if (validImages.length !== files.length) {
+                showToast('Faqat rasm fayllari qo\'llab-quvvatlanadi', 'error');
+            }
+
+            if (validImages.length === 0) return;
+
+            validImages.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imageData = {
+                        id: Math.random().toString(36).substr(2, 9),
+                        file: file,
+                        preview: e.target.result,
+                        name: file.name
+                    };
+                    images.push(imageData);
+                    addImagePreview(imageData);
+                    updateUI();
+                };
+                reader.readAsDataURL(file);
+            });
+
+            showToast(`${validImages.length} ta rasm yuklandi`, 'success');
+        }
+
+        function addImagePreview(imageData) {
+            // Remove existing add-more button temporarily
+            const existingAddMore = document.getElementById('addMoreBtn');
+            if (existingAddMore) {
+                existingAddMore.remove();
+            }
+
+            const previewItem = document.createElement('div');
+            previewItem.className = 'preview-item';
+            previewItem.style.animationDelay = `${images.length * 0.05}s`;
+            previewItem.innerHTML = `
+                <img src="${imageData.preview}" alt="${imageData.name}">
+                <div class="preview-overlay"></div>
+                <button class="remove-button" onclick="removeImage('${imageData.id}')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            `;
+            elements.previewGrid.appendChild(previewItem);
+
+            // Always add "Add More" button at the beginning
+            const addMoreBtn = document.createElement('div');
+            addMoreBtn.id = 'addMoreBtn';
+            addMoreBtn.className = 'add-more-button';
+            addMoreBtn.innerHTML = `
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+            `;
+            addMoreBtn.onclick = () => elements.fileInput.click();
+            elements.previewGrid.insertBefore(addMoreBtn, elements.previewGrid.firstChild);
+        }
+
+        function removeImage(id) {
+            images = images.filter(img => img.id !== id);
+            renderPreviews();
+            updateUI();
+            showToast('Rasm o\'chirildi', 'info');
+        }
+
+        function renderPreviews() {
+            elements.previewGrid.innerHTML = '';
+            images.forEach(img => addImagePreview(img));
+        }
+
+        function updateUI() {
+            const hasImages = images.length > 0;
+            const hasPDF = pdfBlob !== null;
+            
+            if (hasPDF) {
+                elements.uploadSection.classList.add('hidden');
+                elements.previewSection.style.display = 'none';
+                elements.pdfPreviewSection.style.display = 'block';
+                elements.actionButtons.classList.add('hidden');
+                elements.pdfButtons.classList.remove('hidden');
+                elements.backButton.classList.remove('hidden');
+            } else if (hasImages) {
+                elements.uploadSection.classList.add('hidden');
+                elements.previewSection.style.display = 'block';
+                elements.pdfPreviewSection.style.display = 'none';
+                elements.actionButtons.classList.remove('hidden');
+                elements.pdfButtons.classList.add('hidden');
+                elements.imageCount.textContent = `${images.length} ta rasm`;
+                elements.backButton.classList.remove('hidden');
+            } else {
+                elements.uploadSection.classList.remove('hidden');
+                elements.previewSection.style.display = 'none';
+                elements.pdfPreviewSection.style.display = 'none';
+                elements.actionButtons.classList.add('hidden');
+                elements.pdfButtons.classList.add('hidden');
+                elements.backButton.classList.add('hidden');
+            }
+        }
+
+        async function convertToPDF() {
+            if (images.length === 0) return;
+
+            elements.convertBtn.disabled = true;
+            elements.convertBtnText.textContent = 'Yuklanmoqda...';
+            showToast('PDF yaratilmoqda...', 'info');
+
+            try {
+                const pdf = new jsPDF();
+                let isFirstPage = true;
+
+                for (const imageData of images) {
+                    if (!isFirstPage) {
+                        pdf.addPage();
+                    }
+                    isFirstPage = false;
+
+                    const img = new Image();
+                    await new Promise((resolve) => {
+                        img.onload = resolve;
+                        img.src = imageData.preview;
+                    });
+
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
+                    
+                    const imgRatio = img.width / img.height;
+                    const pageRatio = pageWidth / pageHeight;
+
+                    let finalWidth, finalHeight;
+                    
+                    if (imgRatio > pageRatio) {
+                        finalWidth = pageWidth - 20;
+                        finalHeight = finalWidth / imgRatio;
+                    } else {
+                        finalHeight = pageHeight - 20;
+                        finalWidth = finalHeight * imgRatio;
+                    }
+
+                    const x = (pageWidth - finalWidth) / 2;
+                    const y = (pageHeight - finalHeight) / 2;
+
+                    pdf.addImage(imageData.preview, 'JPEG', x, y, finalWidth, finalHeight);
+                }
+
+                pdfBlob = pdf.output('blob');
+                
+                // Update PDF stats
+                const sizeInKB = (pdfBlob.size / 1024).toFixed(1);
+                elements.pdfPageCount.textContent = images.length;
+                elements.pdfSize.textContent = sizeInKB + ' KB';
+                
+                showToast('PDF tayyor!', 'success');
+                updateUI();
+
+            } catch (error) {
+                showToast('Xatolik yuz berdi', 'error');
+                console.error(error);
+            } finally {
+                elements.convertBtn.disabled = false;
+                elements.convertBtnText.textContent = 'PDF yaratish';
+            }
+        }
+
+        function downloadPDF() {
+            if (!pdfBlob) return;
+
+            const url = URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `2PDF-${Date.now()}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('PDF yuklab olindi', 'success');
+        }
+
+        async function sharePDF() {
+            if (!pdfBlob) return;
+
+            const file = new File([pdfBlob], `2PDF-${Date.now()}.pdf`, { 
+                type: 'application/pdf' 
+            });
+
+            if (navigator.share && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'PDF Hujjat',
+                        text: 'Rasmlardan yaratilgan PDF'
+                    });
+                    showToast('PDF ulashildi', 'success');
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        showToast('Ulashishda xatolik', 'error');
+                    }
+                }
+            } else {
+                showToast('Brauzeringiz ulashishni qo\'llab-quvvatlamaydi', 'error');
+            }
+        }
+
+        function goBack() {
+            const hasPDF = pdfBlob !== null;
+            const hasImages = images.length > 0;
+
+            if (hasPDF) {
+                // PDF ekranidan rasmlar ekraniga qaytish
+                pdfBlob = null;
+                updateUI();
+            } else if (hasImages) {
+                // Rasmlar ekranidan bosh sahifaga qaytish
+                images = [];
+                elements.previewGrid.innerHTML = '';
+                updateUI();
+            }
+        }
+    </script>
+</body>
+</html>
