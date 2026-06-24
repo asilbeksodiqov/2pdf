@@ -1,4 +1,5 @@
 const { jsPDF } = window.jspdf;
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 // ===== PAGE NAVIGATION =====
 function switchPage(page) {
@@ -334,10 +335,8 @@ function onQualityChange(val) {
     currentQuality = parseInt(val);
     cel.qualityValue.textContent = val + '%';
 
-    // Update slider gradient
     cel.qualitySlider.style.background = `linear-gradient(to right, var(--green) 0%, var(--green) ${val}%, var(--border) ${val}%, var(--border) 100%)`;
 
-    // Update preset buttons
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('preset-active'));
     if (currentQuality <= 35) document.querySelectorAll('.preset-btn')[0].classList.add('preset-active');
     else if (currentQuality >= 90) document.querySelectorAll('.preset-btn')[2].classList.add('preset-active');
@@ -353,7 +352,6 @@ function setQuality(val) {
 
 function updateEstimatedSize() {
     if (!compressFile) return;
-    // Estimate: quality ratio^1.5 approximation
     const ratio = (currentQuality / 100);
     const estimatedBytes = Math.round(compressFile.size * Math.pow(ratio, 1.4));
     const saved = compressFile.size - estimatedBytes;
@@ -486,5 +484,217 @@ async function shareCompressed() {
     }
 }
 
-// Init slider gradient
 onQualityChange(75);
+
+// ===================================================
+// ===== MERGE =====
+// ===================================================
+let mergeFiles = [];
+let mergedBlob = null;
+const MAX_PDF_FILES = 15;
+
+const mel = {
+    uploadArea: document.getElementById('mergeUploadArea'),
+    fileInput: document.getElementById('mergeFileInput'),
+    uploadSection: document.getElementById('mergeUploadSection'),
+    previewSection: document.getElementById('mergePreviewSection'),
+    doneSection: document.getElementById('mergeDoneSection'),
+    mergeList: document.getElementById('mergeList'),
+    fileCount: document.getElementById('pdfFileCount'),
+    actionButtons: document.getElementById('mergeActionButtons'),
+    doneButtons: document.getElementById('mergeDoneButtons'),
+    backButton: document.getElementById('mergeBackButton'),
+    mergeBtn: document.getElementById('mergeBtn'),
+    mergeBtnText: document.getElementById('mergeBtnText'),
+    mergedPageCount: document.getElementById('mergedPageCount'),
+    mergedFileCount: document.getElementById('mergedFileCount'),
+    mergedSize: document.getElementById('mergedSize')
+};
+
+mel.fileInput.addEventListener('change', handleMergeFiles);
+
+mel.uploadArea.addEventListener('click', (e) => {
+    if (e.target === mel.uploadArea || e.target.closest('.upload-icon-wrapper') || e.target.closest('.upload-title') || e.target.closest('.upload-subtitle')) {
+        mel.fileInput.click();
+    }
+});
+
+mel.uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    mel.uploadArea.classList.add('dragover');
+});
+
+mel.uploadArea.addEventListener('dragleave', () => mel.uploadArea.classList.remove('dragover'));
+
+mel.uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    mel.uploadArea.classList.remove('dragover');
+    mel.fileInput.files = e.dataTransfer.files;
+    handleMergeFiles();
+});
+
+function handleMergeFiles() {
+    const files = Array.from(mel.fileInput.files);
+    const validPDFs = files.filter(f => f.type === 'application/pdf');
+
+    if (validPDFs.length !== files.length) {
+        showToast('Faqat PDF fayllari qo\'llab-quvvatlanadi', 'error');
+    }
+
+    if (validPDFs.length === 0) return;
+
+    // Max 15 ta faylni qabul qil
+    const toAdd = validPDFs.slice(0, MAX_PDF_FILES - mergeFiles.length);
+    if (toAdd.length < validPDFs.length) {
+        showToast(`Faqat ${MAX_PDF_FILES} ta fayl qabul qilinadi`, 'warning');
+    }
+
+    toAdd.forEach(file => {
+        const pdfData = {
+            id: Math.random().toString(36).substr(2, 9),
+            file,
+            name: file.name
+        };
+        mergeFiles.push(pdfData);
+        addMergePreview(pdfData);
+    });
+
+    updateMergeUI();
+    showToast(`${toAdd.length} ta PDF yuklandi`, 'success');
+}
+
+function addMergePreview(pdfData) {
+    const item = document.createElement('div');
+    item.className = 'merge-item';
+    item.id = 'merge-' + pdfData.id;
+    item.innerHTML = `
+        <div class="merge-item-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+        </div>
+        <div class="merge-item-info">
+            <div class="merge-item-name">${pdfData.name}</div>
+            <div class="merge-item-size">${formatSize(pdfData.file.size)}</div>
+        </div>
+        <button class="merge-remove-btn" onclick="removeMergePDF('${pdfData.id}')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    `;
+    mel.mergeList.appendChild(item);
+}
+
+function removeMergePDF(id) {
+    mergeFiles = mergeFiles.filter(f => f.id !== id);
+    document.getElementById('merge-' + id).remove();
+    updateMergeUI();
+    showToast('PDF o\'chirildi', 'info');
+}
+
+function updateMergeUI() {
+    const hasFiles = mergeFiles.length > 0;
+    const hasMerged = mergedBlob !== null;
+
+    if (hasMerged) {
+        mel.uploadSection.classList.add('hidden');
+        mel.previewSection.style.display = 'none';
+        mel.doneSection.style.display = 'block';
+        mel.actionButtons.classList.add('hidden');
+        mel.doneButtons.classList.remove('hidden');
+        mel.backButton.classList.remove('hidden');
+    } else if (hasFiles) {
+        mel.uploadSection.classList.add('hidden');
+        mel.previewSection.style.display = 'block';
+        mel.doneSection.style.display = 'none';
+        mel.actionButtons.classList.remove('hidden');
+        mel.doneButtons.classList.add('hidden');
+        mel.fileCount.textContent = `${mergeFiles.length} ta fayl`;
+        mel.backButton.classList.remove('hidden');
+    } else {
+        mel.uploadSection.classList.remove('hidden');
+        mel.previewSection.style.display = 'none';
+        mel.doneSection.style.display = 'none';
+        mel.actionButtons.classList.add('hidden');
+        mel.doneButtons.classList.add('hidden');
+        mel.backButton.classList.add('hidden');
+    }
+}
+
+async function doMerge() {
+    if (mergeFiles.length === 0) return;
+
+    mel.mergeBtn.disabled = true;
+    mel.mergeBtnText.textContent = 'Birlantirilmoqda...';
+    showToast('PDFlar birlantirilmoqda...', 'info');
+
+    try {
+        const pdf = new jsPDF();
+        let totalPages = 0;
+
+        for (let i = 0; i < mergeFiles.length; i++) {
+            const pdfFile = mergeFiles[i];
+            const arrayBuffer = await pdfFile.file.arrayBuffer();
+            const pdfDoc = await pdfjsLib.getDocument(arrayBuffer).promise;
+
+            for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+                if (totalPages > 0) pdf.addPage();
+                totalPages++;
+
+                const page = await pdfDoc.getPage(pageNum);
+                const viewport = page.getViewport({ scale: 2 });
+                const canvas = document.createElement('canvas');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                const ctx = canvas.getContext('2d');
+                await page.render({ canvasContext: ctx, viewport }).promise;
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const pw = pdf.internal.pageSize.getWidth();
+                const ph = pdf.internal.pageSize.getHeight();
+                
+                pdf.addImage(imgData, 'JPEG', 0, 0, pw, ph);
+            }
+        }
+
+        mergedBlob = pdf.output('blob');
+        mel.mergedPageCount.textContent = totalPages;
+        mel.mergedFileCount.textContent = mergeFiles.length;
+        mel.mergedSize.textContent = (mergedBlob.size / 1024).toFixed(1) + ' KB';
+
+        showToast('PDF tayyor!', 'success');
+        updateMergeUI();
+    } catch (err) {
+        showToast('Xatolik yuz berdi', 'error');
+        console.error(err);
+    } finally {
+        mel.mergeBtn.disabled = false;
+        mel.mergeBtnText.textContent = 'Birlashtirish';
+    }
+}
+
+function downloadMerged() {
+    if (!mergedBlob) return;
+    const url = URL.createObjectURL(mergedBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `merged-${Date.now()}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('PDF yuklab olindi', 'success');
+}
+
+function goBackMerge() {
+    if (mergedBlob !== null) {
+        mergedBlob = null;
+        updateMergeUI();
+    } else if (mergeFiles.length > 0) {
+        mergeFiles = [];
+        mel.mergeList.innerHTML = '';
+        updateMergeUI();
+    }
+}
