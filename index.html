@@ -86,14 +86,15 @@
                         </div>
                         <div class="feature-arrow">›</div>
                     </div>
-                    <div class="feature-item no-click">
+                    <div class="feature-item" onclick="switchPage('merge')">
                         <div class="feature-icon feat-purple">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                         </div>
                         <div class="feature-text">
-                            <strong>100% Xavfsiz</strong>
-                            <span>Barcha jarayon faqat brauzeringizda amalga oshadi</span>
+                            <strong>PDF birlashtirish</strong>
+                            <span>Bir nechta PDFni bitta hujjatga birlashtiring</span>
                         </div>
+                        <div class="feature-arrow">›</div>
                     </div>
                     <div class="feature-item no-click">
                         <div class="feature-icon feat-orange">
@@ -367,6 +368,111 @@
             </div>
         </div>
 
+        <!-- ===== MERGE PAGE ===== -->
+        <div id="page-merge" class="page">
+            <div class="header">
+                <button class="back-button hidden" id="mergeBackButton" onclick="goBackMerge()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <div class="logo-container">
+                    <div class="logo-circle logo-circle-purple">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">Merge</span>
+                </div>
+                <p class="tagline">PDF fayllarni bitta hujjatga birlashtiring</p>
+            </div>
+
+            <div class="main-content">
+                <div id="mergeUploadSection" class="upload-section">
+                    <div class="upload-area upload-area-purple" id="mergeUploadArea">
+                        <div class="upload-icon-wrapper upload-icon-wrapper-purple">
+                            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                        </div>
+                        <h2 class="upload-title">PDF fayllarni yuklang</h2>
+                        <p class="upload-subtitle">Fayllarni sudrab oling yoki bosing (max 15 ta)</p>
+                        <button class="upload-button upload-button-purple" onclick="document.getElementById('mergeFileInput').click()">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span>PDF tanlang</span>
+                        </button>
+                        <input type="file" id="mergeFileInput" class="file-input" accept="application/pdf" multiple>
+                    </div>
+                    <div class="info-card info-card-purple">
+                        <div class="info-row">
+                            <div class="info-icon info-icon-purple"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                            <p class="info-text">Tez va xavfsiz - barcha jarayon brauzeringizda</p>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon info-icon-purple"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>
+                            <p class="info-text">Fayllaringiz to'liq maxfiy va xavfsiz</p>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon info-icon-purple"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg></div>
+                            <p class="info-text">15 ta PDF gacha birlashtiring</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="mergePreviewSection" class="merge-preview-section">
+                    <div class="merge-header">
+                        <h3 class="merge-title">Tanlangan PDF fayllar</h3>
+                        <span class="merge-count" id="pdfFileCount">0 ta fayl</span>
+                    </div>
+                    <div class="merge-list" id="mergeList"></div>
+                </div>
+
+                <div id="mergeDoneSection" class="pdf-preview-section">
+                    <div class="pdf-preview-card">
+                        <div class="pdf-icon-wrapper pdf-icon-wrapper-purple">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="pdf-title">PDF tayyor!</h3>
+                        <p class="pdf-info">Hujjatingiz muvaffaqiyatli yaratildi</p>
+                        <div class="pdf-stats">
+                            <div class="pdf-stat">
+                                <span class="pdf-stat-value" id="mergedPageCount">0</span>
+                                <span class="pdf-stat-label">Sahifa</span>
+                            </div>
+                            <div class="pdf-stat pdf-stat-purple">
+                                <span class="pdf-stat-value" id="mergedFileCount">0</span>
+                                <span class="pdf-stat-label">Fayl</span>
+                            </div>
+                            <div class="pdf-stat">
+                                <span class="pdf-stat-value" id="mergedSize">0 KB</span>
+                                <span class="pdf-stat-label">Hajm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons hidden" id="mergeActionButtons">
+                <div class="action-buttons-inner">
+                    <button class="btn-convert btn-convert-purple" id="mergeBtn" onclick="doMerge()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                        <span id="mergeBtnText">Birlashtirish</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="action-buttons hidden" id="mergeDoneButtons">
+                <div class="action-buttons-inner">
+                    <button class="btn-convert btn-convert-purple" onclick="downloadMerged()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Yuklab olish</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- BOTTOM NAV -->
         <nav class="bottom-nav">
             <button class="nav-item active" id="nav-home" onclick="switchPage('home')">
@@ -387,10 +493,17 @@
                 </div>
                 <span>Compress</span>
             </button>
+            <button class="nav-item" id="nav-merge" onclick="switchPage('merge')">
+                <div class="nav-icon-wrap">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                </div>
+                <span>Merge</span>
+            </button>
         </nav>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
