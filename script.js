@@ -35,6 +35,8 @@ function showToast(message, type = 'info') {
 // ===================================================
 let images = [];
 let pdfBlob = null;
+let separateMode = false;
+let isZipResult = false;
 
 const el = {
     uploadArea: document.getElementById('uploadArea'),
@@ -50,8 +52,20 @@ const el = {
     convertBtnText: document.getElementById('convertBtnText'),
     pdfPageCount: document.getElementById('pdfPageCount'),
     pdfSize: document.getElementById('pdfSize'),
-    backButton: document.getElementById('backButton')
+    backButton: document.getElementById('backButton'),
+    separateToggleCard: document.getElementById('separateToggleCard'),
+    separateToggle: document.getElementById('separateToggle'),
+    pdfResultTitle: document.getElementById('pdfResultTitle'),
+    pdfResultInfo: document.getElementById('pdfResultInfo'),
+    pdfPageStat: document.getElementById('pdfPageStat'),
+    pdfFileStat: document.getElementById('pdfFileStat'),
+    pdfFileCountVal: document.getElementById('pdfFileCountVal')
 };
+
+el.separateToggle.addEventListener('change', () => {
+    separateMode = el.separateToggle.checked;
+    el.convertBtnText.textContent = (separateMode && images.length > 1) ? 'PDF larni yaratish' : 'PDF yaratish';
+});
 
 el.fileInput.addEventListener('change', handleFiles);
 
@@ -157,6 +171,15 @@ function updatePdfUI() {
         el.pdfButtons.classList.add('hidden');
         el.imageCount.textContent = `${images.length} ta rasm`;
         el.backButton.classList.remove('hidden');
+
+        if (images.length > 1) {
+            el.separateToggleCard.style.display = 'flex';
+        } else {
+            el.separateToggleCard.style.display = 'none';
+            separateMode = false;
+            el.separateToggle.checked = false;
+        }
+        el.convertBtnText.textContent = (separateMode && images.length > 1) ? 'PDF larni yaratish' : 'PDF yaratish';
     } else {
         el.uploadSection.classList.remove('hidden');
         el.previewSection.style.display = 'none';
@@ -164,50 +187,95 @@ function updatePdfUI() {
         el.actionButtons.classList.add('hidden');
         el.pdfButtons.classList.add('hidden');
         el.backButton.classList.add('hidden');
+        el.separateToggleCard.style.display = 'none';
     }
+}
+
+function fitImageToPage(pdf, img) {
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = pdf.internal.pageSize.getHeight();
+    const ir = img.width / img.height;
+    const pr = pw / ph;
+
+    let fw, fh;
+    if (ir > pr) { fw = pw - 20; fh = fw / ir; }
+    else { fh = ph - 20; fw = fh * ir; }
+
+    return { pw, ph, fw, fh };
 }
 
 async function convertToPDF() {
     if (images.length === 0) return;
 
+    const useSeparate = separateMode && images.length > 1;
+
     el.convertBtn.disabled = true;
     el.convertBtnText.textContent = 'Yuklanmoqda...';
-    showToast('PDF yaratilmoqda...', 'info');
+    showToast(useSeparate ? 'PDF fayllar yaratilmoqda...' : 'PDF yaratilmoqda...', 'info');
 
     try {
-        const pdf = new jsPDF();
-        let isFirstPage = true;
+        if (useSeparate) {
+            const zip = new JSZip();
+            let idx = 1;
 
-        for (const imageData of images) {
-            if (!isFirstPage) pdf.addPage();
-            isFirstPage = false;
+            for (const imageData of images) {
+                const pdf = new jsPDF();
+                const img = new Image();
+                await new Promise(resolve => { img.onload = resolve; img.src = imageData.preview; });
 
-            const img = new Image();
-            await new Promise(resolve => { img.onload = resolve; img.src = imageData.preview; });
+                const { pw, ph, fw, fh } = fitImageToPage(pdf, img);
+                pdf.addImage(imageData.preview, 'JPEG', (pw - fw) / 2, (ph - fh) / 2, fw, fh);
 
-            const pw = pdf.internal.pageSize.getWidth();
-            const ph = pdf.internal.pageSize.getHeight();
-            const ir = img.width / img.height;
-            const pr = pw / ph;
+                const singleBlob = pdf.output('blob');
+                const baseName = (imageData.name || `rasm-${idx}`).replace(/\.[^/.]+$/, '');
+                zip.file(`${String(idx).padStart(2, '0')}-${baseName}.pdf`, singleBlob);
+                idx++;
+            }
 
-            let fw, fh;
-            if (ir > pr) { fw = pw - 20; fh = fw / ir; }
-            else { fh = ph - 20; fw = fh * ir; }
+            pdfBlob = await zip.generateAsync({ type: 'blob' });
+            isZipResult = true;
 
-            pdf.addImage(imageData.preview, 'JPEG', (pw - fw) / 2, (ph - fh) / 2, fw, fh);
+            el.pdfPageStat.style.display = 'none';
+            el.pdfFileStat.style.display = '';
+            el.pdfFileCountVal.textContent = images.length;
+            el.pdfSize.textContent = (pdfBlob.size / 1024).toFixed(1) + ' KB';
+            el.pdfResultTitle.textContent = 'PDF fayllar tayyor!';
+            el.pdfResultInfo.textContent = `${images.length} ta alohida PDF ZIP arxivda tayyor`;
+            showToast('PDF fayllar tayyor!', 'success');
+        } else {
+            const pdf = new jsPDF();
+            let isFirstPage = true;
+
+            for (const imageData of images) {
+                if (!isFirstPage) pdf.addPage();
+                isFirstPage = false;
+
+                const img = new Image();
+                await new Promise(resolve => { img.onload = resolve; img.src = imageData.preview; });
+
+                const { pw, ph, fw, fh } = fitImageToPage(pdf, img);
+                pdf.addImage(imageData.preview, 'JPEG', (pw - fw) / 2, (ph - fh) / 2, fw, fh);
+            }
+
+            pdfBlob = pdf.output('blob');
+            isZipResult = false;
+
+            el.pdfPageStat.style.display = '';
+            el.pdfFileStat.style.display = 'none';
+            el.pdfPageCount.textContent = images.length;
+            el.pdfSize.textContent = (pdfBlob.size / 1024).toFixed(1) + ' KB';
+            el.pdfResultTitle.textContent = 'PDF tayyor!';
+            el.pdfResultInfo.textContent = 'Hujjatingiz muvaffaqiyatli yaratildi';
+            showToast('PDF tayyor!', 'success');
         }
 
-        pdfBlob = pdf.output('blob');
-        el.pdfPageCount.textContent = images.length;
-        el.pdfSize.textContent = (pdfBlob.size / 1024).toFixed(1) + ' KB';
-        showToast('PDF tayyor!', 'success');
         updatePdfUI();
     } catch (err) {
         showToast('Xatolik yuz berdi', 'error');
         console.error(err);
     } finally {
         el.convertBtn.disabled = false;
-        el.convertBtnText.textContent = 'PDF yaratish';
+        el.convertBtnText.textContent = (separateMode && images.length > 1) ? 'PDF larni yaratish' : 'PDF yaratish';
     }
 }
 
@@ -216,21 +284,27 @@ function downloadPDF() {
     const url = URL.createObjectURL(pdfBlob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `2PDF-${Date.now()}.pdf`;
+    a.download = isZipResult ? `2PDF-fayllar-${Date.now()}.zip` : `2PDF-${Date.now()}.pdf`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('PDF yuklab olindi', 'success');
+    showToast(isZipResult ? 'ZIP yuklab olindi' : 'PDF yuklab olindi', 'success');
 }
 
 async function sharePDF() {
     if (!pdfBlob) return;
-    const file = new File([pdfBlob], `2PDF-${Date.now()}.pdf`, { type: 'application/pdf' });
+    const fileName = isZipResult ? `2PDF-fayllar-${Date.now()}.zip` : `2PDF-${Date.now()}.pdf`;
+    const fileType = isZipResult ? 'application/zip' : 'application/pdf';
+    const file = new File([pdfBlob], fileName, { type: fileType });
     if (navigator.share && navigator.canShare({ files: [file] })) {
         try {
-            await navigator.share({ files: [file], title: 'PDF Hujjat', text: 'Rasmlardan yaratilgan PDF' });
-            showToast('PDF ulashildi', 'success');
+            await navigator.share({
+                files: [file],
+                title: isZipResult ? 'PDF fayllar' : 'PDF Hujjat',
+                text: isZipResult ? 'Rasmlardan yaratilgan PDF fayllar' : 'Rasmlardan yaratilgan PDF'
+            });
+            showToast(isZipResult ? 'ZIP ulashildi' : 'PDF ulashildi', 'success');
         } catch (err) {
             if (err.name !== 'AbortError') showToast('Ulashishda xatolik', 'error');
         }
@@ -242,10 +316,13 @@ async function sharePDF() {
 function goBack() {
     if (pdfBlob !== null) {
         pdfBlob = null;
+        isZipResult = false;
         updatePdfUI();
     } else if (images.length > 0) {
         images = [];
         el.previewGrid.innerHTML = '';
+        separateMode = false;
+        el.separateToggle.checked = false;
         updatePdfUI();
     }
 }
