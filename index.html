@@ -173,21 +173,39 @@
                         <span class="preview-count" id="imageCount">0 ta rasm</span>
                     </div>
                     <div class="preview-grid" id="previewGrid"></div>
+
+                    <div class="separate-toggle-card" id="separateToggleCard">
+                        <div class="separate-toggle-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-7 4h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div class="separate-toggle-info">
+                            <span class="separate-toggle-title">Har birini alohida PDF qilish</span>
+                            <span class="separate-toggle-desc">Yoqilsa, har bir rasm uchun alohida PDF yaratiladi (ZIP holida)</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="separateToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
                 </div>
 
                 <div id="pdfPreviewSection" class="pdf-preview-section">
                     <div class="pdf-preview-card">
-                        <div class="pdf-icon-wrapper">
+                        <div class="pdf-icon-wrapper" id="pdfResultIconWrapper">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="pdf-title">PDF tayyor!</h3>
-                        <p class="pdf-info">Hujjatingiz muvaffaqiyatli yaratildi</p>
+                        <h3 class="pdf-title" id="pdfResultTitle">PDF tayyor!</h3>
+                        <p class="pdf-info" id="pdfResultInfo">Hujjatingiz muvaffaqiyatli yaratildi</p>
                         <div class="pdf-stats">
-                            <div class="pdf-stat">
+                            <div class="pdf-stat" id="pdfPageStat">
                                 <span class="pdf-stat-value" id="pdfPageCount">0</span>
                                 <span class="pdf-stat-label">Sahifa</span>
+                            </div>
+                            <div class="pdf-stat" id="pdfFileStat">
+                                <span class="pdf-stat-value" id="pdfFileCountVal">0</span>
+                                <span class="pdf-stat-label">Fayl</span>
                             </div>
                             <div class="pdf-stat">
                                 <span class="pdf-stat-value" id="pdfSize">0 KB</span>
@@ -504,6 +522,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
