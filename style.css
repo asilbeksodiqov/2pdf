@@ -1013,6 +1013,105 @@ body {
     width: 0%;
 }
 
+/* ===== COMPRESS TABS (Image / Video) ===== */
+.compress-tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+    margin: 0 16px 12px;
+}
+
+.compress-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 10px;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.compress-tab-btn svg { width: 16px; height: 16px; }
+
+.compress-tab-btn.active {
+    background: var(--bg-card);
+    color: var(--green);
+    box-shadow: var(--shadow-sm);
+}
+
+.compress-tab-content { display: none; }
+.compress-tab-content.active { display: block; }
+
+/* ===== VIDEO COMPRESS ===== */
+.compress-video-preview {
+    width: 100%;
+    max-height: 220px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    background: #000;
+}
+
+.compress-video-preview video {
+    width: 100%;
+    max-height: 220px;
+    display: block;
+}
+
+.video-progress-card {
+    display: none;
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 10px;
+}
+
+.video-progress-card.active { display: block; }
+
+.video-progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.video-progress-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+
+.video-progress-value {
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--green);
+}
+
+.video-progress-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.video-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--green), var(--green-light));
+    border-radius: 4px;
+    transition: width 0.25s ease;
+}
+
 /* ===== BOTTOM NAV ===== */
 .bottom-nav {
     height: var(--nav-h);
