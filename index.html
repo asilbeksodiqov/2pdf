@@ -255,10 +255,22 @@
                     </div>
                     <span class="logo-text">Compress</span>
                 </div>
-                <p class="tagline">Rasmni sifatini saqlagan holda siqing</p>
+                <p class="tagline" id="compressTagline">Rasmni sifatini saqlagan holda siqing</p>
+            </div>
+
+            <div class="compress-tabs">
+                <button class="compress-tab-btn active" id="tabImageBtn" onclick="switchCompressTab('image')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span>Rasm</span>
+                </button>
+                <button class="compress-tab-btn" id="tabVideoBtn" onclick="switchCompressTab('video')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <span>Video</span>
+                </button>
             </div>
 
             <div class="main-content">
+              <div id="compressImageTab" class="compress-tab-content active">
                 <div id="compressUploadSection" class="upload-section">
                     <div class="upload-area upload-area-green" id="compressUploadArea">
                         <div class="upload-icon-wrapper upload-icon-wrapper-green">
@@ -361,6 +373,114 @@
                         </div>
                     </div>
                 </div>
+              </div>
+              <!-- /compressImageTab -->
+
+              <div id="compressVideoTab" class="compress-tab-content">
+                <div id="compressVideoUploadSection" class="upload-section">
+                    <div class="upload-area upload-area-green" id="compressVideoUploadArea">
+                        <div class="upload-icon-wrapper upload-icon-wrapper-green">
+                            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <h2 class="upload-title">Videoni yuklang</h2>
+                        <p class="upload-subtitle">1 ta video tanlang (MP4, MOV, WebM)</p>
+                        <button class="upload-button upload-button-green" onclick="document.getElementById('compressVideoFileInput').click()">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span>Videoni tanlang</span>
+                        </button>
+                        <input type="file" id="compressVideoFileInput" class="file-input" accept="video/*">
+                    </div>
+                    <div class="info-card info-card-green">
+                        <div class="info-row">
+                            <div class="info-icon info-icon-green"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div>
+                            <p class="info-text">Sifat darajasini o'zingiz tanlang</p>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon info-icon-green"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                            <p class="info-text">Server kerak emas, siqish brauzeringizda ishlaydi</p>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon info-icon-green"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+                            <p class="info-text">Birinchi ishga tushirishda siqish vositasi (~30MB) yuklanadi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="compressVideoSettingsSection" class="compress-settings-section">
+                    <div class="compress-preview-wrap">
+                        <div class="compress-video-preview">
+                            <video id="compressVideoPreview" controls muted></video>
+                        </div>
+                        <div class="compress-size-row">
+                            <div class="compress-size-box">
+                                <span class="compress-size-label">Hozirgi hajm</span>
+                                <span class="compress-size-value" id="compressVideoOriginalSize">—</span>
+                            </div>
+                            <div class="compress-arrow-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                            </div>
+                            <div class="compress-size-box compress-size-box-green">
+                                <span class="compress-size-label">Tanlangan sifat</span>
+                                <span class="compress-size-value green-val" id="compressVideoQualityLabel">75%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="compress-quality-card">
+                        <div class="compress-quality-header">
+                            <span class="compress-quality-label">Sifat darajasi</span>
+                            <span class="compress-quality-value" id="videoQualityValue">75%</span>
+                        </div>
+                        <input type="range" id="videoQualitySlider" class="quality-slider" min="10" max="95" value="75" oninput="onVideoQualityChange(this.value)">
+                        <div class="compress-quality-hints">
+                            <span>Kichik hajm</span>
+                            <span>Yuqori sifat</span>
+                        </div>
+                        <div class="compress-presets">
+                            <button class="preset-btn" onclick="setVideoQuality(30)">Minimal</button>
+                            <button class="preset-btn preset-active" onclick="setVideoQuality(75)">Optimal</button>
+                            <button class="preset-btn" onclick="setVideoQuality(95)">Yuqori</button>
+                        </div>
+                    </div>
+
+                    <div class="video-progress-card" id="videoProgressCard">
+                        <div class="video-progress-row">
+                            <span class="video-progress-label" id="videoProgressLabel">FFmpeg yuklanmoqda...</span>
+                            <span class="video-progress-value" id="videoProgressValue">0%</span>
+                        </div>
+                        <div class="video-progress-track">
+                            <div class="video-progress-fill" id="videoProgressFill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="compressVideoDoneSection" class="pdf-preview-section">
+                    <div class="pdf-preview-card">
+                        <div class="pdf-icon-wrapper pdf-icon-wrapper-green">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h3 class="pdf-title">Compress tayyor!</h3>
+                        <p class="pdf-info">Video muvaffaqiyatli siqildi</p>
+                        <div class="pdf-stats">
+                            <div class="pdf-stat">
+                                <span class="pdf-stat-value" id="compressVideoBeforeSize">—</span>
+                                <span class="pdf-stat-label">Avval</span>
+                            </div>
+                            <div class="pdf-stat pdf-stat-green">
+                                <span class="pdf-stat-value" id="compressVideoAfterSize">—</span>
+                                <span class="pdf-stat-label">Keyin</span>
+                            </div>
+                            <div class="pdf-stat">
+                                <span class="pdf-stat-value" id="compressVideoSavedPct">—</span>
+                                <span class="pdf-stat-label">Tejaldi</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <!-- /compressVideoTab -->
             </div>
 
             <div class="action-buttons hidden" id="compressActionButtons">
@@ -379,6 +499,28 @@
                         <span>Yuklab olish</span>
                     </button>
                     <button class="btn-secondary" onclick="shareCompressed()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                        <span>Ulashish</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="action-buttons hidden" id="videoActionButtons">
+                <div class="action-buttons-inner">
+                    <button class="btn-convert btn-convert-green" id="videoCompressBtn" onclick="doVideoCompress()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                        <span id="videoCompressBtnText">Siqish</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="action-buttons hidden" id="videoDoneButtons">
+                <div class="action-buttons-inner">
+                    <button class="btn-convert btn-convert-green" onclick="downloadCompressedVideo()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Yuklab olish</span>
+                    </button>
+                    <button class="btn-secondary" onclick="shareCompressedVideo()">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                         <span>Ulashish</span>
                     </button>
@@ -524,5 +666,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="script.js"></script>
+    <script type="module" src="video-compress.js"></script>
 </body>
 </html>
