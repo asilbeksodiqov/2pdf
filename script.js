@@ -521,6 +521,10 @@ function updateCompressUI(state) {
 }
 
 function goBackCompress() {
+    if (activeCompressTab === 'video') {
+        if (typeof goBackVideoCompress === 'function') goBackVideoCompress();
+        return;
+    }
     if (compressedBlob !== null) {
         compressedBlob = null;
         updateCompressUI('settings');
@@ -528,6 +532,33 @@ function goBackCompress() {
         compressFile = null;
         cel.fileInput.value = '';
         updateCompressUI('upload');
+    }
+}
+
+// ===== COMPRESS TABS (Rasm / Video) =====
+let activeCompressTab = 'image';
+
+function switchCompressTab(tab) {
+    activeCompressTab = tab;
+
+    document.getElementById('tabImageBtn').classList.toggle('active', tab === 'image');
+    document.getElementById('tabVideoBtn').classList.toggle('active', tab === 'video');
+    document.getElementById('compressImageTab').classList.toggle('active', tab === 'image');
+    document.getElementById('compressVideoTab').classList.toggle('active', tab === 'video');
+    document.getElementById('compressTagline').textContent = tab === 'image'
+        ? "Rasmni sifatini saqlagan holda siqing"
+        : "Videoni sifatini saqlagan holda siqing";
+
+    if (tab === 'image') {
+        document.getElementById('videoActionButtons').classList.add('hidden');
+        document.getElementById('videoDoneButtons').classList.add('hidden');
+        if (compressedBlob !== null) updateCompressUI('done');
+        else if (compressFile !== null) updateCompressUI('settings');
+        else updateCompressUI('upload');
+    } else {
+        cel.actionButtons.classList.add('hidden');
+        cel.doneButtons.classList.add('hidden');
+        if (typeof syncVideoCompressUI === 'function') syncVideoCompressUI();
     }
 }
 
