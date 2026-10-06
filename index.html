@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="2PDF: rasmlarni PDF ga aylantiring, rasmlarni siqing va PDF fayllarni birlashtiring. Barcha jarayon brauzeringizda.">
+    <meta name="theme-color" content="#FAFBFD">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%232D4CFF'/%3E%3Cpath d='M10 7h8l5 5v13a1 1 0 01-1 1H10a1 1 0 01-1-1V8a1 1 0 011-1z' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <title>2PDF - Fayl boshqaruv vositasi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="toast" class="toast">
+        <svg class="toast-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span class="toast-text"></span>
+    </div>
+
+    <div class="app-wrapper">
+
+        <!-- ===== HOME PAGE ===== -->
+        <div id="page-home" class="page active">
+            <div class="home-header">
+                <div class="home-logo">
+                    <div class="logo-circle">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <span class="logo-text">2PDF</span>
+                </div>
+                <p class="home-tagline">Fayl boshqaruv vositangiz</p>
+            </div>
+
+            <div class="home-content">
+                <!-- Hero Animation -->
+                <div class="hero-animation">
+                    <div class="anim-stage">
+                        <div class="anim-imgs-group">
+                            <div class="anim-img anim-img-1">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <div class="anim-img anim-img-2">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <div class="anim-img anim-img-3">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                        </div>
+                        <div class="anim-arrow">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                        </div>
+                        <div class="anim-results">
+                            <div class="anim-pdf">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span>PDF</span>
+                            </div>
+                            <div class="anim-compress-mini">
+                                <div class="cmini-bar cmini-before"></div>
+                                <div class="cmini-arrow">↓</div>
+                                <div class="cmini-bar cmini-after"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="features-list">
+                    <div class="feature-item" role="button" tabindex="0" onclick="switchPage(\'2pdf\')">
+                        <div class="feature-icon feat-blue">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <div class="feature-text">
+                            <strong>Rasmdan PDF</strong>
+                            <span>Bir nechta rasmni bitta PDF hujjatga birlashtiring</span>
+                        </div>
+                        <div class="feature-arrow">›</div>
+                    </div>
+                    <div class="feature-item" role="button" tabindex="0" onclick="switchPage(\'compress\')">
+                        <div class="feature-icon feat-green">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                        </div>
+                        <div class="feature-text">
+                            <strong>Rasm siqish</strong>
+                            <span>Rasm hajmini sifatni nazorat qilgan holda kamaytiring</span>
+                        </div>
+                        <div class="feature-arrow">›</div>
+                    </div>
+                    <div class="feature-item" role="button" tabindex="0" onclick="switchPage(\'merge\')">
+                        <div class="feature-icon feat-purple">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                        </div>
+                        <div class="feature-text">
+                            <strong>PDF birlashtirish</strong>
+                            <span>Bir nechta PDFni bitta hujjatga birlashtiring</span>
+                        </div>
+                        <div class="feature-arrow">›</div>
+                    </div>
+                    <div class="feature-item no-click">
+                        <div class="feature-icon feat-orange">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        </div>
+                        <div class="feature-text">
+                            <strong>Tez ishlaydi</strong>
+                            <span>Serverga yuklamasdan, darhol natija olasiz</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="home-contact">
+                    <span>Savol va takliflar:</span>
+                    <a href="mailto:info@sodiqov.uz">info@sodiqov.uz</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 2PDF PAGE ===== -->
+        <div id="page-2pdf" class="page">
+            <div class="header">
+                <button class="back-button hidden" id="backButton" aria-label="Orqaga" onclick="goBack()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <div class="logo-container">
+                    <div class="logo-circle">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <span class="logo-text">2PDF</span>
+                </div>
+                <p class="tagline">Rasmlarni bir zumda PDF ga aylantiring</p>
+            </div>
+
+            <div class="main-content">
+                <div id="uploadSection" class="upload-section">
+                    <div class="upload-area" id="uploadArea" tabindex="0" role="button">
+                        <div class="upload-icon-wrapper">
+                            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                        </div>
+                        <h2 class="upload-title">Rasmlarni yuklang</h2>
+                        <p class="upload-subtitle">Fayllarni sudrab oling yoki bosing</p>
+                        <button class="upload-button" onclick="document.getElementById('fileInput').click()">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <span>Rasmlarni tanlang</span>
+                        </button>
+                        <input type="file" id="fileInput" class="file-input" accept="image/jpeg,image/png,image/webp,image/gif,image/bmp,image/avif" multiple>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-row">
+                            <div class="info-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+                            <p class="info-text">Tez va xavfsiz - barcha jarayon brauzeringizda</p>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div>
+                            <p class="info-text">Rasmlaringiz to'liq maxfiy va xavfsiz</p>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
+                            <p class="info-text">Bir nechta rasmni bitta PDF ga birlashtiring</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="previewSection" class="preview-section">
+                    <div class="preview-header">
+                        <h3 class="preview-title">Tanlangan rasmlar</h3>
+                        <span class="preview-count" id="imageCount">0 ta rasm</span>
+                    </div>
+                    <div class="preview-grid" id="previewGrid"></div>
+
+                    <div class="separate-toggle-card" id="separateToggleCard">
+                        <div class="separate-toggle-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-7 4h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div class="separate-toggle-info">
+                            <span class="separate-toggle-title">Har birini alohida PDF qilish</span>
+                            <span class="separate-toggle-desc">Yoqilsa, har bir rasm uchun alohida PDF yaratiladi (ZIP holida)</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="separateToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="pdfPreviewSection" class="pdf-preview-section">
+                    <div class="pdf-preview-card">
+                        <div class="pdf-icon-wrapper" id="pdfResultIconWrapper">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="pdf-title" id="pdfResultTitle">PDF tayyor!</h3>
+                        <p class="pdf-info" id="pdfResultInfo">Hujjatingiz muvaffaqiyatli yaratildi</p>
+                        <div class="pdf-stats">
+                            <div class="pdf-stat" id="pdfPageStat">
+                                <span class="pdf-stat-value" id="pdfPageCount">0</span>
+                                <span class="pdf-stat-label">Sahifa</span>
+                            </div>
+                            <div class="pdf-stat" id="pdfFileStat">
+                                <span class="pdf-stat-value" id="pdfFileCountVal">0</span>
+                                <span class="pdf-stat-label">Fayl</span>
+                            </div>
+                            <div class="pdf-stat">
+                                <span class="pdf-stat-value" id="pdfSize">0 KB</span>
+                                <span class="pdf-stat-label">Hajm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons hidden" id="actionButtons">
+                <div class="action-buttons-inner">
+                    <button class="btn-convert" id="convertBtn" onclick="convertToPDF()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span id="convertBtnText">PDF yaratish</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="action-buttons hidden" id="pdfButtons">
+                <div class="action-buttons-inner">
+                    <button class="btn-convert" onclick="downloadPDF()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>Yuklab olish</span>
+                    </button>
+                    <button class="btn-secondary" onclick="sharePDF()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                        <span>Ulashish</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== COMPRESS PAGE ===== -->
+        <div id="page-compress" class="page">
+            <div class="header">
+                <button class="back-button hidden" id="compressBackButton" aria-label="Orqaga" onclick="goBackCompress()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <div class="logo-container">
+                    <div class="logo-circle logo-circle-green">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">Siqish</span>
+                </div>
+                <p class="tagline">Rasm hajmini sifatni nazorat qilgan holda kamaytiring</p>
+            </div>
+
+            <div class="main-content">
+              
+                <div id="compressUploadSection" class="upload-section">
+                    <div class="upload-area upload-area-green" id="compressUploadArea" tabindex="0" role="button">
+                        <div class="upload-icon-wrapper upload-icon-wrapper-green">
+                            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                            </svg>
+                        </div>
+                        <h2 class="upload-title">Rasmni yuklang</h2>
+                        <p class="upload-subtitle">1 ta rasm tanlang (JPG, PNG, WebP)</p>
+                        <button class="upload-button upload-button-green" onclick="document.getElementById('compressFileInput').click()">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span>Rasmni tanlang</span>
+                        </button>
+                        <input type="file" id="compressFileInput" class="file-input" accept="image/jpeg,image/png,image/webp">
+                    </div>
+                    <div class="info-card info-card-green">
+                        <div class="info-row">
+                            <div class="info-icon info-icon-green"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+                            <p class="info-text">Sifat darajasini o'zingiz tanlang</p>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon info-icon-green"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div>
+                            <p class="info-text">Natija hajmi oldindan hisoblab ko'rsatiladi</p>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon info-icon-green"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                            <p class="info-text">Serverga yuklanmaydi, brauzeringizda ishlaydi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="compressSettingsSection" class="compress-settings-section">
+                    <div class="compress-preview-wrap">
+                        <div class="compress-img-preview">
+                            <img id="compressPreviewImg" src="" alt="preview">
+                        </div>
+                        <div class="compress-size-row">
+                            <div class="compress-size-box">
+                                <span class="compress-size-label">Hozirgi hajm</span>
+                                <span class="compress-size-value" id="compressOriginalSize">—</span>
+                            </div>
+                            <div class="compress-arrow-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                            </div>
+                            <div class="compress-size-box compress-size-box-green">
+                                <span class="compress-size-label">Yangi hajm</span>
+                                <span class="compress-size-value green-val" id="compressEstimatedSize">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="compress-quality-card">
+                        <div class="compress-quality-header">
+                            <span class="compress-quality-label">Sifat darajasi</span>
+                            <span class="compress-quality-value" id="qualityValue">75%</span>
+                        </div>
+                        <input type="range" id="qualitySlider" class="quality-slider" min="10" max="95" value="75" oninput="onQualityChange(this.value)">
+                        <div class="compress-quality-hints">
+                            <span>Kichik hajm</span>
+                            <span>Yuqori sifat</span>
+                        </div>
+                        <div class="compress-presets">
+                            <button class="preset-btn" onclick="setQuality(30)">Minimal</button>
+                            <button class="preset-btn preset-active" onclick="setQuality(75)">Optimal</button>
+                            <button class="preset-btn" onclick="setQuality(95)">Yuqori</button>
+                        </div>
+                    </div>
+
+                    <div class="compress-saving-bar">
+                        <div class="saving-row">
+                            <span class="saving-label-text">Tejash:</span>
+                            <span class="saving-label" id="savingLabel">—</span>
+                        </div>
+                        <div class="saving-track">
+                            <div class="saving-fill" id="savingFill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="compressDoneSection" class="pdf-preview-section">
+                    <div class="pdf-preview-card">
+                        <div class="pdf-icon-wrapper pdf-icon-wrapper-green">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h3 class="pdf-title">Rasm siqildi!</h3>
+                        <p class="pdf-info">Rasm muvaffaqiyatli siqildi</p>
+                        <div class="pdf-stats">
+                            <div class="pdf-stat">
+                                <span class="pdf-stat-value" id="compressBeforeSize">—</span>
+                                <span class="pdf-stat-label">Avval</span>
+                            </div>
+                            <div class="pdf-stat pdf-stat-green">
+                                <span class="pdf-stat-value" id="compressAfterSize">—</span>
+                                <span class="pdf-stat-label">Keyin</span>
+                            </div>
+                            <div class="pdf-stat">
+                                <span class="pdf-stat-value" id="compressSavedPct">—</span>
+                                <span class="pdf-stat-label">Tejalgan</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons hidden" id="compressActionButtons">
+                <div class="action-buttons-inner">
+                    <button class="btn-convert btn-convert-green" id="compressBtn" onclick="doCompress()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                        <span id="compressBtnText">Siqish</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="action-buttons hidden" id="compressDoneButtons">
+                <div class="action-buttons-inner">
+                    <button class="btn-convert btn-convert-green" onclick="downloadCompressed()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Yuklab olish</span>
+                    </button>
+                    <button class="btn-secondary" onclick="shareCompressed()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                        <span>Ulashish</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MERGE PAGE ===== -->
+        <div id="page-merge" class="page">
+            <div class="header">
+                <button class="back-button hidden" id="mergeBackButton" aria-label="Orqaga" onclick="goBackMerge()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <div class="logo-container">
+                    <div class="logo-circle logo-circle-purple">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">Birlashtirish</span>
+                </div>
+                <p class="tagline">PDF fayllarni bitta hujjatga birlashtiring</p>
+            </div>
+
+            <div class="main-content">
+                <div id="mergeUploadSection" class="upload-section">
+                    <div class="upload-area upload-area-purple" id="mergeUploadArea" tabindex="0" role="button">
+                        <div class="upload-icon-wrapper upload-icon-wrapper-purple">
+                            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                        </div>
+                        <h2 class="upload-title">PDF fayllarni yuklang</h2>
+                        <p class="upload-subtitle">Fayllarni sudrab oling yoki bosing (max 15 ta)</p>
+                        <button class="upload-button upload-button-purple" onclick="document.getElementById('mergeFileInput').click()">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span>PDF tanlang</span>
+                        </button>
+                        <input type="file" id="mergeFileInput" class="file-input" accept="application/pdf,.pdf" multiple>
+                    </div>
+                    <div class="info-card info-card-purple">
+                        <div class="info-row">
+                            <div class="info-icon info-icon-purple"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+                            <p class="info-text">Tez va xavfsiz - barcha jarayon brauzeringizda</p>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon info-icon-purple"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>
+                            <p class="info-text">Fayllaringiz to'liq maxfiy va xavfsiz</p>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-icon info-icon-purple"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg></div>
+                            <p class="info-text">Matn va sifat saqlanadi, sahifalar asl holida qoladi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="mergePreviewSection" class="merge-preview-section">
+                    <div class="merge-header">
+                        <h3 class="merge-title">Tanlangan PDF fayllar</h3>
+                        <div class="merge-header-right">
+                            <span class="merge-count" id="pdfFileCount">0 ta fayl</span>
+                            <button class="merge-add-btn" id="mergeAddBtn" type="button" aria-label="PDF qo'shish">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                                <span>Qo'shish</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="merge-list" id="mergeList"></div>
+                </div>
+
+                <div id="mergeDoneSection" class="pdf-preview-section">
+                    <div class="pdf-preview-card">
+                        <div class="pdf-icon-wrapper pdf-icon-wrapper-purple">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="pdf-title">PDF tayyor!</h3>
+                        <p class="pdf-info">Hujjatingiz muvaffaqiyatli yaratildi</p>
+                        <div class="pdf-stats">
+                            <div class="pdf-stat">
+                                <span class="pdf-stat-value" id="mergedPageCount">0</span>
+                                <span class="pdf-stat-label">Sahifa</span>
+                            </div>
+                            <div class="pdf-stat pdf-stat-purple">
+                                <span class="pdf-stat-value" id="mergedFileCount">0</span>
+                                <span class="pdf-stat-label">Fayl</span>
+                            </div>
+                            <div class="pdf-stat">
+                                <span class="pdf-stat-value" id="mergedSize">0 KB</span>
+                                <span class="pdf-stat-label">Hajm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons hidden" id="mergeActionButtons">
+                <div class="action-buttons-inner">
+                    <button class="btn-convert btn-convert-purple" id="mergeBtn" onclick="doMerge()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                        <span id="mergeBtnText">Birlashtirish</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="action-buttons hidden" id="mergeDoneButtons">
+                <div class="action-buttons-inner">
+                    <button class="btn-convert btn-convert-purple" onclick="downloadMerged()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Yuklab olish</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAV -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" id="nav-home" aria-label="Asosiy sahifa" onclick="switchPage('home')">
+                <div class="nav-icon-wrap">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                </div>
+                <span>Asosiy</span>
+            </button>
+            <button class="nav-item" id="nav-2pdf" aria-label="Rasmdan PDF" onclick="switchPage('2pdf')">
+                <div class="nav-icon-wrap">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                </div>
+                <span>2PDF</span>
+            </button>
+            <button class="nav-item" id="nav-compress" aria-label="Rasm siqish" onclick="switchPage('compress')">
+                <div class="nav-icon-wrap">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                </div>
+                <span>Siqish</span>
+            </button>
+            <button class="nav-item" id="nav-merge" aria-label="PDF birlashtirish" onclick="switchPage('merge')">
+                <div class="nav-icon-wrap">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                </div>
+                <span>Birlashtirish</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
